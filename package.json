@@ -1,0 +1,19 @@
+{
+  "name": "crystal-proto-ozma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "crystal-ozma - Copy.js",
+  "scripts": {
+    "dev": "node crystal-ozma"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^14.6.0",
+    "mariadb": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.26.0"
+  }
+}
