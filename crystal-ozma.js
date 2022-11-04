@@ -13,7 +13,8 @@ const { buildPartyLeaderEmbed,
   buildPasswordEmbed,
   buildNoPasswordEmbed,
   buildScheduleEmbed,
-  buildExternalAnnounceCancelledOngoing,
+  buildExternalAnnounceCancelled,
+  buildExternalAnnounceOngoing,
   buildExternalAnnounceNewRun,
   buildCountdownNoScheduleEmbed } = require('./functions/EmbedFunctions/index')
 const { getReactionPartyNumber } = require('./functions/ReactionFunctions/getReactionPartyNumber')
@@ -179,10 +180,10 @@ function clockFunctions() {
       .then((row) => {
         if (row[0] !== undefined) {
           if ((Date.now() - 4680000) > row[0].Start) {
-            channelArsenal.setRateLimitPerUser(0, "Slowmode is now off, please resume your regular shitposting.");
+            channelArsenal.setRateLimitPerUser(0, "Slowmode Off");
           }
           else if ((Date.now() + 900000) > row[0].Start) {
-            channelArsenal.setRateLimitPerUser(30, "There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#1035056741991338025>.\n\nRaid Leads, gremlins, or staff not actively moderating: <:accelerationbomb:1036732124427989042>");
+            channelArsenal.setRateLimitPerUser(30, "Slowmode On");
           }
         }
       }).catch((error) => console.log(error));
@@ -264,7 +265,7 @@ function clockFunctions() {
                   client.users.cache
                     .get(row[0]["PL" + i])
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Party " +
                       elementsArray[i] +
@@ -277,7 +278,7 @@ function clockFunctions() {
                   client.users.cache
                     .get(row[0].PLS)
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Support Party\nThe support password will be " +
                       row[0].PasscodeSupport +
@@ -316,11 +317,11 @@ function clockFunctions() {
           }
           if (timeString === "15 minutes.") {
             channelArsenal.send(
-              `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#1035056741991338025>.\n\nRaid Leads, Gremlins, or staff not actively moderating: <:accelerationbomb:1036732124427989042>`
+              `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#${serverInfo.channels.scheduleChat}>.\n\nRaid Leads, Gremlins, or staff not actively moderating: ${serverInfo.emojiFull.activeRun}`
             );
           }
           if (timeString === "1 minutes.") {
-            let announceEdit = buildExternalAnnounceCancelledOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
+            let announceEdit = buildExternalAnnounceOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
                 message.delete();
@@ -389,7 +390,7 @@ client.on(Events.MessageCreate, (msg) => {
       ]) &&
         pool.query("SELECT * FROM `Runs` WHERE `ID` = ?", [args[0]])
           .then((row) => {
-            let announceCancel = buildExternalAnnounceCancelledOngoing(row, cafe, `This ${config.serverAbbr} run has been canceled.`)
+            let announceCancel = buildExternalAnnounceCancelled(row, cafe, `This ${config.serverAbbr} run has been canceled.`)
             let raidLeader = cafe.members.cache.get(row[0].RL).id;
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
@@ -654,7 +655,7 @@ client.on(Events.MessageCreate, (msg) => {
             " (Substitute B with A, B, or C as appropriate to your platform).";
         }
         msg.channel.send({
-          content: post, 
+          content: post,
           files: ["https://cdn.rosaworks.uk/proto-ozma/boss-" + boss + ".png"],
         });
         if (boss.includes("ozma")) {
@@ -671,7 +672,7 @@ client.on(Events.MessageCreate, (msg) => {
   if (command === "element" || command === "elements" || command === "rooms") {
     let post = "Elemental Room Assignments";
     msg.channel.send({
-      content: post, 
+      content: post,
       files: ["https://cdn.rosaworks.uk/proto-ozma/boss-elements.png"],
     });
   }
@@ -687,7 +688,7 @@ client.on(Events.MessageCreate, (msg) => {
       "/p Portal 7: <7>\n" +
       "/p Portal 8: <8>\n";
     msg.channel.send({
-      content: post, 
+      content: post,
       files: [
       "https://cdn.discordapp.com/attachments/759118863085469756/759119014499844166/UC9QI0G.jpg",
       ],
@@ -733,7 +734,7 @@ client.on(Events.MessageCreate, (msg) => {
                   client.users.cache
                     .get(row[0]["PL" + i])
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Party " +
                       elementsArray[i] +
@@ -746,7 +747,7 @@ client.on(Events.MessageCreate, (msg) => {
                   client.users.cache
                     .get(row[0].PLS)
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Support Party\nThe support Password will be " +
                       row[0].PasscodeSupport +

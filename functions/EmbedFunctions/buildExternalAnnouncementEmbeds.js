@@ -11,10 +11,19 @@ const generateStrikethroughFields = (row, cafe) => {
   { name: "~~Run ID~~", value: `~~${row[0].ID.toString()}~~` }]
 }
 
-const buildExternalAnnounceCancelledOngoing = (row, cafe, title) => {
+const buildExternalAnnounceCancelled = (row, cafe, title) => {
   return new EmbedBuilder()
     .setColor("71368a")
     .setTitle(title)
+    .setThumbnail("https://cdn.discordapp.com/attachments/415080317506945024/999129063522312193/ezgif.com-gif-maker_4.gif")
+    .addFields(generateStrikethroughFields(row,cafe))
+}
+
+const buildExternalAnnounceOngoing = (row, cafe, title) => {
+  return new EmbedBuilder()
+    .setColor("71368a")
+    .setTitle(title)
+    .setThumbnail("https://cdn.discordapp.com/attachments/415080317506945024/999168912920944760/ezgif.com-gif-maker_5.gif")
     .addFields(generateStrikethroughFields(row,cafe))
 }
 
@@ -31,4 +40,4 @@ const buildExternalAnnounceNewRun = (row, cafe) => {
       { name: "Run ID", value: row[0].ID.toString() },)
 }
 
-module.exports = { buildExternalAnnounceCancelledOngoing, buildExternalAnnounceNewRun }
+module.exports = { buildExternalAnnounceOngoing, buildExternalAnnounceCancelled, buildExternalAnnounceNewRun }
