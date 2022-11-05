@@ -31,6 +31,7 @@ const buildExternalAnnounceNewRun = (row, cafe) => {
   return new EmbedBuilder()
     .setColor("71368a")
     .setTitle(`New BA Run On ${config.serverAbbr}`)
+    .setThumbnail("https://cdn.discordapp.com/attachments/415080317506945024/999188851547451442/ozmacleanF.gif")
     .addFields({ name: "Where:", value: `[${config.serverAbbr} on ${config.datacenter} DC](${config.discordLink})`, inline: false },
       { name: "Raid Leader", value: cafe.members.cache.get(row[0].RL).displayName, inline: true },
       { name: "Type", value: row[0].Type, inline: true },
