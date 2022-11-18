@@ -6,7 +6,11 @@ const { Client,
 } = require("discord.js");
 const { getCountdownString } = require('./functions/CountdownFunctions/getCountdownString')
 const { getFineCountdownString } = require('./functions/CountdownFunctions/getFineCountdownString')
-const { getDate, getDayOfWeek, getServerTime, getLocalTime, getMonth } = require('./functions/GeneralTimeFunctions/index')
+const { getDate,
+  getDayOfWeek,
+  getServerTime,
+  getLocalTime,
+  getMonth } = require('./functions/GeneralTimeFunctions/index')
 const { buildPartyLeaderEmbed,
   buildServerTimeEmbed,
   buildCountdownEmbed,
@@ -40,7 +44,7 @@ const ozmablack = require("./ozmablack"); //Countermeasures
 
 client.once(Events.ClientReady, async () => {
   console.log("[" + getLocalTime() + "] Connected to Discord");
-  client.user.setActivity("powering up the bass cannon.");
+  client.user.setActivity("powering up the accel bomb.");
   const guild = await client.guilds.fetch(serverInfo.id);
   guild.channels.cache.get(serverInfo.channels.partyLeader);
 })
@@ -135,11 +139,11 @@ function clockFunctions() {
           let runPlusone = "";
           if (run.Plusone ||
             Math.round(run.Start) < (Date.now() + 7200000)) {
-            runPlusone = serverInfo.emoji.plusOneNo; //No
+            runPlusone = serverInfo.emojiFull.plusOneNo; //No
           }
           if (!run.Plusone &&
             !(Math.round(run.Start) < (Date.now() + 7200000))) {
-            runPlusone = serverInfo.emoji.plusOneYes; //Yes
+            runPlusone = serverInfo.emojiFull.plusOneYes; //Yes
           }
           if (runDate !== previousDate) {
             embedDescription +=
@@ -521,7 +525,8 @@ client.on(Events.MessageCreate, (msg) => {
         type === "lm" ||
         type === "meme" ||
         type === "rc" ||
-        type === "reclear"
+        type === "reclear" ||
+        type === "spicy" && msg.member.roles.cache.has(serverInfo.roles.special.admin)
       ) {
         runType = args[1].toUpperCase();
         if (regExp.test(args[2])) {
