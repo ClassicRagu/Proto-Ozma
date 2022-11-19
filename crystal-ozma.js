@@ -6,14 +6,19 @@ const { Client,
 } = require("discord.js");
 const { getCountdownString } = require('./functions/CountdownFunctions/getCountdownString')
 const { getFineCountdownString } = require('./functions/CountdownFunctions/getFineCountdownString')
-const { getDate, getDayOfWeek, getServerTime, getLocalTime, getMonth } = require('./functions/GeneralTimeFunctions/index')
+const { getDate,
+  getDayOfWeek,
+  getServerTime,
+  getLocalTime,
+  getMonth } = require('./functions/GeneralTimeFunctions/index')
 const { buildPartyLeaderEmbed,
   buildServerTimeEmbed,
   buildCountdownEmbed,
   buildPasswordEmbed,
   buildNoPasswordEmbed,
   buildScheduleEmbed,
-  buildExternalAnnounceCancelledOngoing,
+  buildExternalAnnounceCancelled,
+  buildExternalAnnounceOngoing,
   buildExternalAnnounceNewRun,
   buildCountdownNoScheduleEmbed } = require('./functions/EmbedFunctions/index')
 const { getReactionPartyNumber } = require('./functions/ReactionFunctions/getReactionPartyNumber')
@@ -39,7 +44,7 @@ const ozmablack = require("./ozmablack"); //Countermeasures
 
 client.once(Events.ClientReady, async () => {
   console.log("[" + getLocalTime() + "] Connected to Discord");
-  client.user.setActivity("powering up the bass cannon.");
+  client.user.setActivity("powering up the accel bomb.");
   const guild = await client.guilds.fetch(serverInfo.id);
   guild.channels.cache.get(serverInfo.channels.partyLeader);
 })
@@ -134,11 +139,11 @@ function clockFunctions() {
           let runPlusone = "";
           if (run.Plusone ||
             Math.round(run.Start) < (Date.now() + 7200000)) {
-            runPlusone = serverInfo.emoji.plusOneNo; //No
+            runPlusone = serverInfo.emojiFull.plusOneNo; //No
           }
           if (!run.Plusone &&
             !(Math.round(run.Start) < (Date.now() + 7200000))) {
-            runPlusone = serverInfo.emoji.plusOneYes; //Yes
+            runPlusone = serverInfo.emojiFull.plusOneYes; //Yes
           }
           if (runDate !== previousDate) {
             embedDescription +=
@@ -179,10 +184,10 @@ function clockFunctions() {
       .then((row) => {
         if (row[0] !== undefined) {
           if ((Date.now() - 4680000) > row[0].Start) {
-            channelArsenal.setRateLimitPerUser(0, "Slowmode is now off, please resume your regular shitposting.");
+            channelArsenal.setRateLimitPerUser(0, "Slowmode Off");
           }
           else if ((Date.now() + 900000) > row[0].Start) {
-            channelArsenal.setRateLimitPerUser(30, "There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#1035056741991338025>.\n\nRaid Leads, gremlins, or staff not actively moderating: <:accelerationbomb:1036732124427989042>");
+            channelArsenal.setRateLimitPerUser(30, "Slowmode On");
           }
         }
       }).catch((error) => console.log(error));
@@ -264,7 +269,7 @@ function clockFunctions() {
                   client.users.cache
                     .get(row[0]["PL" + i])
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Party " +
                       elementsArray[i] +
@@ -277,7 +282,7 @@ function clockFunctions() {
                   client.users.cache
                     .get(row[0].PLS)
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Support Party\nThe support password will be " +
                       row[0].PasscodeSupport +
@@ -316,11 +321,11 @@ function clockFunctions() {
           }
           if (timeString === "15 minutes.") {
             channelArsenal.send(
-              `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#1035056741991338025>.\n\nRaid Leads, Gremlins, or staff not actively moderating: <:accelerationbomb:1036732124427989042>`
+              `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#${serverInfo.channels.scheduleChat}>.\n\nRaid Leads, Gremlins, or staff not actively moderating: ${serverInfo.emojiFull.activeRun}`
             );
           }
           if (timeString === "1 minutes.") {
-            let announceEdit = buildExternalAnnounceCancelledOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
+            let announceEdit = buildExternalAnnounceOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
                 message.delete();
@@ -389,7 +394,7 @@ client.on(Events.MessageCreate, (msg) => {
       ]) &&
         pool.query("SELECT * FROM `Runs` WHERE `ID` = ?", [args[0]])
           .then((row) => {
-            let announceCancel = buildExternalAnnounceCancelledOngoing(row, cafe, `This ${config.serverAbbr} run has been canceled.`)
+            let announceCancel = buildExternalAnnounceCancelled(row, cafe, `This ${config.serverAbbr} run has been canceled.`)
             let raidLeader = cafe.members.cache.get(row[0].RL).id;
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
@@ -520,7 +525,8 @@ client.on(Events.MessageCreate, (msg) => {
         type === "lm" ||
         type === "meme" ||
         type === "rc" ||
-        type === "reclear"
+        type === "reclear" ||
+        type === "spicy" && msg.member.roles.cache.has(serverInfo.roles.special.admin)
       ) {
         runType = args[1].toUpperCase();
         if (regExp.test(args[2])) {
@@ -654,7 +660,7 @@ client.on(Events.MessageCreate, (msg) => {
             " (Substitute B with A, B, or C as appropriate to your platform).";
         }
         msg.channel.send({
-          content: post, 
+          content: post,
           files: ["https://cdn.rosaworks.uk/proto-ozma/boss-" + boss + ".png"],
         });
         if (boss.includes("ozma")) {
@@ -671,7 +677,7 @@ client.on(Events.MessageCreate, (msg) => {
   if (command === "element" || command === "elements" || command === "rooms") {
     let post = "Elemental Room Assignments";
     msg.channel.send({
-      content: post, 
+      content: post,
       files: ["https://cdn.rosaworks.uk/proto-ozma/boss-elements.png"],
     });
   }
@@ -687,7 +693,7 @@ client.on(Events.MessageCreate, (msg) => {
       "/p Portal 7: <7>\n" +
       "/p Portal 8: <8>\n";
     msg.channel.send({
-      content: post, 
+      content: post,
       files: [
       "https://cdn.discordapp.com/attachments/759118863085469756/759119014499844166/UC9QI0G.jpg",
       ],
@@ -733,7 +739,7 @@ client.on(Events.MessageCreate, (msg) => {
                   client.users.cache
                     .get(row[0]["PL" + i])
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Party " +
                       elementsArray[i] +
@@ -746,7 +752,7 @@ client.on(Events.MessageCreate, (msg) => {
                   client.users.cache
                     .get(row[0].PLS)
                     .send(
-                      "Party Finder Information:\nDynamis Adventuring Forays United BA - " +
+                      `Party Finder Information:\n${config.serverName} BA - ` +
                       row[0].Type +
                       " Run, Support Party\nThe support Password will be " +
                       row[0].PasscodeSupport +
