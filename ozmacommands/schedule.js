@@ -15,18 +15,26 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
   if (args[0] === "add" || args[0] === "nopw") {
     let postFormat =
       "Format: _!schedule add <type> <dd-mmm-yy> <hh:mm> (optional: description)_\n" +
+      "or _!schedule add <type> <unix timestamp> (optional: description)_\n" +
       "i.e. _!schedule add open 16-jun-20 19:00_\n" +
-      "i.e. _!schedule add open 16-jun-20 19:00 Description goes here_";
-    let valueDescription = "N/A";
-    let queryFieldDescription = "";
+      "i.e. _!schedule add open 1592334000_\n" +
+      "i.e. _!schedule add open 16-jun-20 19:00 Description goes here_\n" +
+      "i.e. _!schedule add open 1592334000 Description goes here_";
+    let valueDescription = ", 'N/A'";
+    let queryFieldDescription = ", `Description`";
     if (args.length < 4) {
       commandError(msg, "Insufficient information provided.\n" + postFormat);
       return;
     }
-    if (args.length > 4) {
-      let postArray = args.slice(4);
+    const isUnixTime = !isNaN(args[2])
+    if ((isUnixTime && args.length > 3) || args.length > 4) {
+      let postArray = []
+      if(isUnixTime) {
+        postArray = args.slice(3);
+      } else {
+        postArray = args.slice(4);
+      }
       valueDescription = ", '" + postArray.join(" ") + "'";
-      queryFieldDescription = ", `Description`";
     }
     let runType = "";
     let runDate = new Date();
@@ -43,11 +51,15 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
       type === "spicy" && msg.member.roles.cache.has(serverInfo.roles.special.admin)
     ) {
       runType = args[1].toUpperCase();
-      if (regExp.test(args[2])) {
-        let arrayDate = args[2].split("-");
-        runDate.setUTCDate(arrayDate[0]);
-        runDate.setUTCMonth(getMonth(arrayDate[1]));
-        runDate.setUTCFullYear("20" + arrayDate[2]);
+      if (isUnixTime || regExp.test(args[2])) {
+        if(isUnixTime){
+          runDate = new Date(args[2] * 1000)
+        } else {
+          let arrayDate = args[2].split("-");
+          runDate.setUTCDate(arrayDate[0]);
+          runDate.setUTCMonth(getMonth(arrayDate[1]));
+          runDate.setUTCFullYear("20" + arrayDate[2]);
+        }
         regExp = /([0-9]{2}):([0-9]{2})/g;
         let passcodeMain = 0;
         let passcodeSupport = 0;
@@ -66,9 +78,11 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
             );
           }
         }
-        if (regExp.test(args[3])) {
-          let arrayTime = args[3].split(":");
-          runDate.setUTCHours(arrayTime[0], arrayTime[1], 0, 0);
+        if (isUnixTime || regExp.test(args[3])) {
+          if(!isUnixTime){
+            let arrayTime = args[3].split(":");
+            runDate.setUTCHours(arrayTime[0], arrayTime[1], 0, 0);
+          }
           runTime = runDate.getTime();
           if (runTime < currentDate.getTime()) {
             commandError(
