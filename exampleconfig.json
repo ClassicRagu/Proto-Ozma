@@ -84,6 +84,7 @@
       "announceNew": "https://cdn.discordapp.com/attachments/415080317506945024/999188851547451442/ozmacleanF.gif",
       "announceCanceled": "https://cdn.discordapp.com/attachments/415080317506945024/999129063522312193/ezgif.com-gif-maker_4.gif",
       "announceStarted": "https://cdn.discordapp.com/attachments/415080317506945024/999168912920944760/ezgif.com-gif-maker_5.gif"
-    }
+    },
+    "announceEmbedColor": "71368a"
   }
 }
