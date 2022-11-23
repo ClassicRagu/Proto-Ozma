@@ -276,6 +276,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               .get(serverInfo.channels.baAnnounce)
               .send({ embeds: [announceEmbed] })
               .then(async (sentAnnounce) => {
+                sentAnnounce.crosspost().catch(console.error('Could not publish'))
                 pool.query("UPDATE `Runs` SET `AnnounceEmbedID` = ? WHERE `ID` = ?", [sentAnnounce.id, runID]);
               })
               .catch((error) => console.log(error));
