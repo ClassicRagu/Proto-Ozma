@@ -27,7 +27,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
           }
           else if (msg.member.roles.cache.has(serverInfo.roles.flex.ozmaKiller) && !msg.member.roles.cache.has(serverInfo.roles.special.raidLeader)) {
             msg.reply(
-              "Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unreact to that role in <#1035070783178952804> if you haven't cleared BA!");
+              `Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unreact to that role in <#${serverInfo.channels.baRoles}> if you haven't cleared BA!`);
           }
           else if (((Math.round(row[0].Start) > (Date.now() + 7200000)) && (Math.round(row[0].Start) < (Date.now() + 172800000)))) {
             msg.author.send(

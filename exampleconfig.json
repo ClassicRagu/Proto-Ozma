@@ -24,7 +24,8 @@
       "runinprogress": "1037135403079192627",
       "scheduleChat": "1037135310989037681",
       "baAnnounce": "1037135538232242186",
-      "extAnnounce": "1037135506133221476"
+      "extAnnounce": "1037135506133221476",
+      "baRoles": ""
     },
     "embedColor": "#cc0000",
     "emoji": {
@@ -37,6 +38,7 @@
       "elementWind": "2⃣",
       "plusOneNo": "<:no:962092452125229117>",
       "plusOneYes": "<:yes:962092477416890448>",
+      "activeRun": "",
       "true": "✔",
       "false": "❌",
       "deafened": "🔇",
@@ -51,7 +53,8 @@
       "elementIce": "6⃣",
       "elementLightning": "5⃣",
       "elementWater": "3⃣",
-      "elementWind": "2⃣"
+      "elementWind": "2⃣",
+      "activeRun":
     },
     "emojiName" : {
       "bunny": "drink_tea",
@@ -60,7 +63,8 @@
       "elementIce": "6⃣",
       "elementLightning": "5⃣",
       "elementWater": "3⃣",
-      "elementWind": "2⃣"
+      "elementWind": "2⃣",
+      "activeRun":
     },
     "id": "1037135192114085958",
     "posts": {
