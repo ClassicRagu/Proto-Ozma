@@ -63,7 +63,7 @@ const buildPartyLeaderEmbed = (run, client, serverInfo) => {
       `\n${emotes.elementLightning} Lightning: ${runPL5}` +
       `\n${emotes.elementIce} Ice: ${runPL6}` +
       `\n\n${emotes.bunny} **Support**: ${runPLS}` +
-      `\n\n**Specific Roles:**` +
+      (run[0].PerceptArg || run[0].SpiritDartArg ? `\n\n**Specific Roles:**` : ``) +
       (run[0].PerceptArg ? `\n${emotes.perception} Perception: ${perception}` : ``) +
       (run[0].SpiritDartArg ? `\n${emotes.spiritDart} Spirit Dart: ${spiritDart}` : ``) +
       `\n\n**React to the relevant emoji to *host* a party.` +

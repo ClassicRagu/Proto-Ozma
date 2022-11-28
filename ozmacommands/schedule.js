@@ -102,7 +102,6 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
               );
               return;
             } else {
-              console.log(hasAdditionalArgs)
               pool
                 .query(
                   "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`" +
