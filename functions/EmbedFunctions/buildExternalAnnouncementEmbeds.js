@@ -14,7 +14,7 @@ const generateStrikethroughFields = (row, cafe) => {
 
 const buildExternalAnnounceCancelled = (row, cafe, title) => {
   return new EmbedBuilder()
-    .setColor("71368a")
+    .setColor(serverInfo.announceEmbedColor)
     .setTitle(title)
     .setThumbnail(`${serverInfo.announceGifs.announceCanceled}`)
     .addFields(generateStrikethroughFields(row,cafe))
@@ -22,7 +22,7 @@ const buildExternalAnnounceCancelled = (row, cafe, title) => {
 
 const buildExternalAnnounceOngoing = (row, cafe, title) => {
   return new EmbedBuilder()
-    .setColor("71368a")
+    .setColor(serverInfo.announceEmbedColor)
     .setTitle(title)
     .setThumbnail(`${serverInfo.announceGifs.announceStarted}`)
     .addFields(generateStrikethroughFields(row,cafe))
@@ -30,7 +30,7 @@ const buildExternalAnnounceOngoing = (row, cafe, title) => {
 
 const buildExternalAnnounceNewRun = (row, cafe) => {
   return new EmbedBuilder()
-    .setColor("71368a")
+    .setColor(serverInfo.announceEmbedColor)
     .setTitle(`New BA Run On ${config.serverAbbr}`)
     .setThumbnail(`${serverInfo.announceGifs.announceNew}`)
     .addFields({ name: "Where:", value: `[${config.serverAbbr} on ${config.datacenter} DC](${config.discordLink})`, inline: false },
