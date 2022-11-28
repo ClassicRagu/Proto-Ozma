@@ -224,6 +224,30 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 }
               }
             }
+
+            if (row[0].PerceptArg && row[0].Percept !== '-') {
+              client.users.cache
+                .get(row[0].Percept)
+                .send(
+                  `Party Finder Information:\n${config.serverName} BA - ` +
+                  row[0].Type +
+                  " Run.\nYou are assigned to bring Perception L, please join any party with open space as a dps." +
+                  "\nPassword will be " +
+                  row[0].PasscodeMain
+                ).catch((error) => console.log(error));
+            }
+
+            if (row[0].SpiritDartArg && row[0].SpiritDart !== '-') {
+              client.users.cache
+                .get(row[0].SpiritDart)
+                .send(
+                  `Party Finder Information:\n${config.serverName} BA - ` +
+                  row[0].Type +
+                  " Run.\nYou are assigned to bring Spirit Dart L, please join any party with open space as a dps." +
+                  "\nPassword will be " +
+                  row[0].PasscodeMain
+                ).catch((error) => console.log(error));
+            }
           }
           if (timeString === "30 minutes.") {
             channelNextRunPasscode.setName(
