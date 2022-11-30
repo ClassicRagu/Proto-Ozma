@@ -42,7 +42,9 @@
       "deafened": "🔇",
       "hourglass": "⏳",
       "nextRun": "⏭",
-      "passcode": "🔑"
+      "passcode": "🔑",
+      "perception": "1046584770685055077",
+      "spiritDart": "1046584771515523102"
     },
     "emojiFull": {
       "bunny": "<:drink_tea:1035417384300847134>",
@@ -51,7 +53,9 @@
       "elementIce": "6⃣",
       "elementLightning": "5⃣",
       "elementWater": "3⃣",
-      "elementWind": "2⃣"
+      "elementWind": "2⃣",
+      "perception": "<:perception:1046584770685055077>",
+      "spiritDart": "<:spirit_dart:1046584771515523102>"
     },
     "emojiName" : {
       "bunny": "drink_tea",
@@ -60,7 +64,9 @@
       "elementIce": "6⃣",
       "elementLightning": "5⃣",
       "elementWater": "3⃣",
-      "elementWind": "2⃣"
+      "elementWind": "2⃣",
+      "perception": "perception",
+      "spiritDart": "spirit_dart"
     },
     "id": "1037135192114085958",
     "posts": {
@@ -84,6 +90,7 @@
       "announceNew": "https://cdn.discordapp.com/attachments/415080317506945024/999188851547451442/ozmacleanF.gif",
       "announceCanceled": "https://cdn.discordapp.com/attachments/415080317506945024/999129063522312193/ezgif.com-gif-maker_4.gif",
       "announceStarted": "https://cdn.discordapp.com/attachments/415080317506945024/999168912920944760/ezgif.com-gif-maker_5.gif"
-    }
+    },
+    "announceEmbedColor": "71368a"
   }
 }
