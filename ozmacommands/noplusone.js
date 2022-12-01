@@ -1,4 +1,4 @@
-const noplusone = (msg, serverInfo, args, currentDate, client, pool) => {
+const noplusone = (msg, serverInfo, args, client, pool) => {
  if (
   msg.member.roles.cache.has(serverInfo.roles.special.raidLeader)
 ) {
