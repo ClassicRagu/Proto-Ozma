@@ -20,8 +20,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         "i.e. _!schedule add open 1592334000_\n" +
         "i.e. _!schedule add open 16-jun-20 19:00 Description goes here_\n" +
         "i.e. _!schedule add open 1592334000 Description goes here_";
-      let valueDescription = ", 'N/A'";
-      let queryFieldDescription = ", `Description`";
+      let valueDescription = "N/A";
       if (args.length < 4) {
         commandError(msg, "Insufficient information provided.\n" + postFormat);
         return;
@@ -39,7 +38,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         } else {
           postArray = args.slice(5);
         }
-        valueDescription = ", '" + postArray.join(" ") + "'";
+        valueDescription = postArray.join(" ");
       }
       let runType = "";
       let runDate = new Date();
@@ -103,24 +102,21 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
               return;
             } else {
               pool
-                .query(
-                  "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`" +
-                  queryFieldDescription +
-                  ")" +
-                  " VALUES (?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-'" +
-                  valueDescription +
-                  ")",
-                  [
-                    runType,
-                    runTime,
-                    passcodeMain,
-                    passcodeSupport,
-                    hasAdditionalArgs && argumentArg.includes('n'),
-                    hasAdditionalArgs && argumentArg.includes('p'),
-                    hasAdditionalArgs && argumentArg.includes('s'),
-                    msg.member.id
-                  ]
-                )
+              .query(
+                "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-', ?)",
+                [
+                  runType,
+                  runTime,
+                  passcodeMain,
+                  passcodeSupport,
+                  hasAdditionalArgs && argumentArg.includes('n'),
+                  hasAdditionalArgs && argumentArg.includes('p'),
+                  hasAdditionalArgs && argumentArg.includes('s'),
+                  msg.member.id,
+                  valueDescription
+                ]
+              )
                 .then((row) => {
                   let runID = row.insertId;
                   pool.query("SELECT * FROM `Runs` WHERE `ID` = ?", [runID])
