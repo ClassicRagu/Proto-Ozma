@@ -1,6 +1,20 @@
 const { commandError, pad } = require('../functions/GeneralFunctions/index')
 const { getMonth } = require('../functions/GeneralTimeFunctions/getMonth')
 const { buildPartyLeaderEmbed } = require('../functions/EmbedFunctions/index')
+const luxon = require('luxon')
+
+// Luxon's ISO code list is incomplete and doesn't seem to always use US based ISO codes even with set options
+// This will allow users to setup runs during daylight savings time
+const presetOffsets = {
+  'EST': 'UTC-05',
+  'EDT': 'UTC-04',
+  'CST': 'UTC-06',
+  'CDT': 'UTC-05',
+  'MST': 'UTC-07',
+  'MDT': 'UTC-06',
+  'PST': 'UTC-08',
+  'PDT': 'UTC-07'
+}
 
 const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
   if (
@@ -26,15 +40,28 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         return;
       }
       const isUnixTime = !isNaN(args[2])
+      const isTimezone = presetOffsets[args[4]] !== undefined
       const hasAdditionalArgs = (isUnixTime && args[3] !== undefined && args[3].startsWith('--'))
-        || (args[4] !== undefined && args[4].startsWith('--'))
-      const argumentArg = isUnixTime && hasAdditionalArgs ? args[3] : hasAdditionalArgs ? args[4] : ''
+        || (args[4] !== undefined && args[4].startsWith('--')) 
+        || (isTimezone && args[5] !== undefined && args[5].startsWith('--'))
+      let argumentArg = ''
+      if(hasAdditionalArgs) {
+        if(isUnixTime) {
+          argumentArg = args[3]
+        } else if (isTimezone) {
+          argumentArg = args[5]
+        } else {
+          argumentArg = args[4]
+        }
+      }
       if ((isUnixTime && args.length > 3) || args.length > 4) {
         let postArray = []
         if (isUnixTime && !hasAdditionalArgs) {
           postArray = args.slice(3);
-        } else if (!hasAdditionalArgs || (isUnixTime && hasAdditionalArgs)) {
+        } else if ((!hasAdditionalArgs && !isTimezone) || (isUnixTime && hasAdditionalArgs)) {
           postArray = args.slice(4);
+        } else if (isTimezone && hasAdditionalArgs) {
+          postArray = args.slice(6);
         } else {
           postArray = args.slice(5);
         }
@@ -58,6 +85,12 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         if (isUnixTime || regExp.test(args[2])) {
           if (isUnixTime) {
             runDate = new Date(args[2] * 1000)
+          } else if (isTimezone) {
+            let arrayDate = args[2].split("-");
+            let month = (getMonth(arrayDate[1]) + 1).toString()
+            month = month.length < 2 ? `0${month}` : month
+            let day = (arrayDate[0]).toString().length < 2 ? `0${arrayDate[0]}` : arrayDate[0]
+            runDate = luxon.DateTime.fromISO(`20${arrayDate[2]}-${month}-${day}T${args[3]}:00.000`, { zone: presetOffsets[args[4]] })
           } else {
             let arrayDate = args[2].split("-");
             runDate.setUTCDate(arrayDate[0]);
@@ -83,11 +116,15 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
             }
           }
           if (isUnixTime || regExp.test(args[3])) {
-            if (!isUnixTime) {
-              let arrayTime = args[3].split(":");
-              runDate.setUTCHours(arrayTime[0], arrayTime[1], 0, 0);
+            if (!isTimezone) {
+              if (!isUnixTime) {
+                let arrayTime = args[3].split(":");
+                runDate.setUTCHours(arrayTime[0], arrayTime[1], 0, 0);
+              }
+              runTime = runDate.getTime();
+            } else {
+              runTime = runDate.ts
             }
-            runTime = runDate.getTime();
             if (runTime < currentDate.getTime()) {
               commandError(
                 msg,
