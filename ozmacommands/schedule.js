@@ -40,7 +40,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         return;
       }
       const isUnixTime = !isNaN(args[2])
-      const isTimezone = presetOffsets[args[4].toLowerCase()] !== undefined
+      const isTimezone = !isUnixTime && args[4] !== undefined && presetOffsets[args[4].toLowerCase()] !== undefined
       const hasAdditionalArgs = (isUnixTime && args[3] !== undefined && args[3].startsWith('--'))
         || (args[4] !== undefined && args[4].startsWith('--')) 
         || (isTimezone && args[5] !== undefined && args[5].startsWith('--'))
