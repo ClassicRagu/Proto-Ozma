@@ -29,7 +29,7 @@ const cancel = (msg, serverInfo, args, currentDate, client, pool, config) => {
             }
             if (raidLeader != msg.author.id) {
               msg.reply(
-                `you cancelled run ${args[0]} scheduled by <@${raidLeader}>.`
+                `You cancelled run ${args[0]} scheduled by <@${raidLeader}>.`
               );
             } else {
               msg.reply(`you cancelled run ${args[0]}.`);

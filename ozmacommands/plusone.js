@@ -6,7 +6,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
       console.error('Failed to delete +1 message, most likely deleted beforehand'))
       , 120100)
     let cafe = client.guilds.cache.get(serverInfo.id);
-    pool.query("SELECT * FROM `Runs` WHERE `Start` > ? AND `Type` != 'RC' AND `Type` != 'MEME' AND `Type` != 'LOWMAN' AND `Type` != 'RECLEAR' AND  `Cancelled` = 0 AND `Plusone` = 0 ORDER BY `Start` ASC LIMIT 2", [currentDate.getTime()]
+    pool.query("SELECT * FROM `Runs` WHERE `Start` > ? AND `Type` = 'Normal' AND `Cancelled` = 0 AND `Plusone` = 0 ORDER BY `Start` ASC LIMIT 2", [currentDate.getTime()]
     )
       .then((row) => {
         if (row.length === 0) {
@@ -27,7 +27,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
           }
           else if (msg.member.roles.cache.has(serverInfo.roles.flex.ozmaKiller) && !msg.member.roles.cache.has(serverInfo.roles.special.raidLeader)) {
             msg.reply(
-              `Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unreact to that role in <#${serverInfo.channels.baRoles}> if you haven't cleared BA!`);
+              `Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unreact to that role in <#${serverInfo.channels.rolesChannel}> if you haven't cleared BA!`);
           }
           else if (((Math.round(row[0].Start) > (Date.now() + 7200000)) && (Math.round(row[0].Start) < (Date.now() + 172800000)))) {
             msg.author.send(
