@@ -3,12 +3,6 @@ const config = require('../../config.json')
 const serverInfo = config.serverInfo
 
 const generateStrikethroughFields = (row, cafe) => {
-  if (row[0].Newbie) {
-    runNewbie = serverInfo.emojiFull.grey;
-  }
-  if (!row[0].Newbie) {
-    runNewbie = serverInfo.emojiFull.sprout;
-  }
   return [{ name: "~~Where:~~", value: `~~[${config.serverAbbr} on ${config.datacenter} DC](${config.discordLink})~~`, inline: false },
   { name: "~~Raid Leader~~", value: `~~${cafe.members.cache.get(row[0].RL).displayName}~~`, inline: true },
   { name: "~~Type~~", value: `~~${row[0].Type}~~ ${runNewbie}`, inline: true },
@@ -35,12 +29,6 @@ const buildExternalAnnounceOngoing = (row, cafe, title) => {
 }
 
 const buildExternalAnnounceNewRun = (row, cafe) => {
-  if (row[0].Newbie) {
-    runNewbie = serverInfo.emojiFull.grey;
-  }
-  if (!row[0].Newbie) {
-    runNewbie = serverInfo.emojiFull.sprout;
-  }
   return new EmbedBuilder()
     .setColor(serverInfo.announceEmbedColor)
     .setTitle(`New BA Run On ${config.serverAbbr}`)

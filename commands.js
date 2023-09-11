@@ -1,4 +1,4 @@
-const { waymarks, elementalrooms, portals, plusone, noplusone, cancel, schedule, ozmaplz } = require("./ozmacommands");
+const { waymarks, elementalrooms, portals, plusone, noplusone, cancel, schedule, ozmaplz/*, roll*/ } = require("./ozmacommands");
 
 const commands = (msg, serverInfo, client, pool, config, ozmablack) => {
  if (msg.author.bot) return;

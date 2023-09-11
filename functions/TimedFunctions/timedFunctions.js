@@ -9,6 +9,7 @@ const { buildServerTimeEmbed,
   buildExternalAnnounceOngoing,
   buildExternalAnnounceNewRun,
   buildCountdownNoScheduleEmbed } = require('../EmbedFunctions/index')
+const exBlacklist = require("./exblacklist")
 
 Object.defineProperty(String.prototype, "hashCode", {
   value: function () {
@@ -29,16 +30,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let cafe = client.guilds.cache.get(serverInfo.id);
     let channelServerTime = client.channels.cache.get(
       serverInfo.channels.serverTime
-    );
-    let channelNextRunType = client.channels.cache.get(
-      serverInfo.channels.nextRunType
-    );
-    let channelNextRunTime = client.channels.cache.get(
-      serverInfo.channels.nextRunTime
-    );
-    let channelNextRunPasscode = client.channels.cache.get(
-      serverInfo.channels.nextRunPasscode
-    );
+    );    
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.schedule
     );
@@ -51,7 +43,13 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let channelAnnounce = client.channels.cache.get(
       serverInfo.channels.baAnnounce
     );
-    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
+    let passcodeChannel = client.channels.cache.get(
+      serverInfo.channels.passcodePG
+    );
+    let passcodeChannel2 = client.channels.cache.get(
+      serverInfo.channels.passcode2
+    );
+    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo);
     channelServerTime.messages
       .fetch(serverInfo.posts.serverTime)
       .then((msg) => {
@@ -143,6 +141,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
           client.user.setActivity("in " + getFineCountdownString(targetDate));
           let timeString = getCountdownString(targetDate);
           let embedCountdown = buildCountdownEmbed(serverInfo, cafe, row, targetDate)
+          let blistlead = row[0].RL
           channelServerTime.messages
             .fetch(serverInfo.posts.nextRun)
             .then((msg) => {
@@ -152,38 +151,11 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               ) {
                 msg.edit({ embeds: [embedCountdown] });
               }
-            });
-          let nextRunType =
-            serverInfo.emoji.nextRun + ' Next Run: "' + row[0].Type + '"';
-          let nextRunTime =
-            serverInfo.emoji.hourglass +
-            " " +
-            getDayOfWeek(targetDate) +
-            " " +
-            getServerTime(targetDate.getTime());
-          if (channelNextRunType.name !== nextRunType) {
-            channelNextRunType.setName(nextRunType);
-          }
-          if (getDate(currentDate) === getDate(targetDate)) {
-            nextRunTime =
-              serverInfo.emoji.hourglass +
-              " Today " +
-              getServerTime(targetDate.getTime());
-          }
-          if (channelNextRunTime.name !== nextRunTime) {
-            channelNextRunTime.setName(nextRunTime);
-          }
-          if (timeString === "1 hour") {
-            let passcodeDate = targetDate.getTime();
-            passcodeDate = passcodeDate - 1800000;
-            channelNextRunPasscode.setName(
-              serverInfo.emoji.passcode +
-              " Password at " +
-              getServerTime(passcodeDate)
-            );
-            channelNextRunPasscode.permissionOverwrites.edit(cafe.id, { ViewChannel: true })
-          }
-          if (timeString === "55 minutes." && row[0].PasscodeMain > 0) {
+            });          
+          if (timeString === "55min." && row[0].PasscodeMain > 0) {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
             client.users.cache
               .get(row[0].RL)
               .send(
@@ -259,17 +231,34 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 ).catch((error) => console.log(error));
             }
           }
-          if (timeString === "30 minutes.") {
-            channelNextRunPasscode.setName(
-              serverInfo.emoji.passcode + " PF Open"
-            );
+          if (timeString === "50min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "45min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "40min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "35min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "30min.") {
+            passcodeChannel.setName(serverInfo.emoji.passcode + "Password Here" + serverInfo.emoji.passcode
+            );            
             if (row[0].PasscodeMain > 0) {
               let runPings = "<@&" + serverInfo.roles.flex.eurekaRaider + ">";
-              let passcodeChannel = serverInfo.channels.passcodePG;
+              let passcodeChannel = serverInfo.channels.passcodePG;              
               if (
                 row[0].Type === "Reclear"
-                //row[0].Type === "ReClear" ||
-                //row[0].Type === "Reclear"
               ) {
                 runPings = "<@&" + serverInfo.roles.flex.ozmaKiller + ">";
               }
@@ -285,12 +274,12 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               client.channels.cache.get(serverInfo.channels.passcodePG).send({ embeds: [embedNoPasscode] });
             }
           }
-          if (timeString === "15 minutes.") {
+          if (timeString === "15min.") {
             channelArsenal.send(
               `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#${serverInfo.channels.scheduleChat}>.\n\nRaid Leads, Gremlins, or staff not actively moderating: ${serverInfo.emojiFull.activeRun}`
             );
           }
-          if (timeString === "1 minutes.") {
+          if (timeString === "1min." || row[0].Cancelled === true) {
             let announceEdit = buildExternalAnnounceOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
@@ -300,9 +289,10 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               .then((message) => {
                 message.edit({ embeds: [announceEdit] });
               }).catch((error) => console.log(error));
-            channelNextRunPasscode.permissionOverwrites.edit(cafe.id, { ViewChannel: false })
+              passcodeChannel.setName("Arsenal Passwords");
+              //passcodeChannel2.permissionOverwrites.edit(cafe.id, { ViewChannel: false });
           }
-          if ((Math.round(row[0].Start) < (Date.now() + 86400000)) && (row[0].AnnounceEmbedID === null) && (row[0].Cancelled === 0)) {
+          if ((Math.round(row[0].Start) < (Date.now() + 86400000)) && (row[0].AnnounceEmbedID === null) && (row[0].Cancelled === 0) && !(exBlacklist.includes(blistlead.toString())) && !(row[0].noAnnounce)) {
             let runID = row[0].ID;
             let announceEmbed = buildExternalAnnounceNewRun(row, cafe)
             client.channels.cache
@@ -324,14 +314,14 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 msg.edit({ embeds: [embedCountdown] });
               }
             });
-          let nextRunType = serverInfo.emoji.nextRun + ' Next Run: "TBC"';
+          /*let nextRunType = serverInfo.emoji.nextRun + ' Next Run: "TBC"';
           let nextRunTime = serverInfo.emoji.hourglass + " See Schedule";
           if (channelNextRunType.name !== nextRunType) {
             channelNextRunType.setName(nextRunType);
           }
           if (channelNextRunTime.name !== nextRunTime) {
             channelNextRunTime.setName(nextRunTime);
-          }
+          }*/
         }
       })
       .catch((error) => console.log(error));

@@ -41,9 +41,9 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
       }
       const isUnixTime = !isNaN(args[2])
       const isTimezone = !isUnixTime && args[4] !== undefined && presetOffsets[args[4].toLowerCase()] !== undefined
-      const hasAdditionalArgs = (isUnixTime && args[3] !== undefined && args[3].startsWith('--'))
-        || (args[4] !== undefined && args[4].startsWith('--'))
-        || (isTimezone && args[5] !== undefined && args[5].startsWith('--'))
+      const hasAdditionalArgs = (isUnixTime && args[3] !== undefined && (args[3].startsWith('--') || args[3].startsWith('—')))
+        || (args[4] !== undefined && (args[4].startsWith('--') || args[4].startsWith('—')))
+        || (isTimezone && args[5] !== undefined && (args[5].startsWith('--') || args[5].startsWith('—')))
       let argumentArg = ''
       if (hasAdditionalArgs) {
         if (isUnixTime) {
@@ -129,8 +129,9 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
           } else {
             pool
               .query(
-                "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `Newbie`, `SupportArg`)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-', ?, ?, ?)",
+                //"INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `Newbie`, `SupportArg`)"
+                "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `Newbie`, `SupportArg`, `noAnnounce`)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-', ?, ?, ?, ?)",
                 [
                   runType,
                   runTime,
@@ -143,7 +144,8 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                   msg.member.id,
                   valueDescription,
                   hasAdditionalArgs && argumentArg.includes('u'),
-                  hasAdditionalArgs && argumentArg.includes('s')
+                  hasAdditionalArgs && argumentArg.includes('s'),
+                  hasAdditionalArgs && argumentArg.includes('b')
                 ]
               )
               .then((row) => {

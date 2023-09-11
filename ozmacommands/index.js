@@ -6,4 +6,6 @@ module.exports = {
  ...require('./schedule'),
  ...require('./waymarks'),
  ...require('./cancel'),
- ...require('./noplusone')}
+ ...require('./noplusone'),
+ ...require('./roll')
+}

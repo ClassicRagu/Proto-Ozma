@@ -19,7 +19,7 @@ const getCountdownString = (targetDate) => {
        timeString += "+.";
      }
    } else {
-     timeString = minutes + " minutes.";
+     timeString = minutes + "min.";
    }
  }
  return timeString;
