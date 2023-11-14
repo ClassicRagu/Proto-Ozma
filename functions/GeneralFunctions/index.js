@@ -1,3 +1,5 @@
 module.exports = {
  ...require('./commandError'), 
- ...require('./pad')}
+ ...require('./pad'),
+ ...require('./runType')
+}

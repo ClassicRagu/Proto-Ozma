@@ -7,6 +7,7 @@ const cancel = (msg, serverInfo, args, currentDate, client, pool, config) => {
     let cafe = client.guilds.cache.get(serverInfo.id);
     let channelLeads = client.channels.cache.get(serverInfo.channels.partyLeader);
     let channelAnnounce = client.channels.cache.get(serverInfo.channels.baAnnounce);
+    let passcodeChannel = client.channels.cache.get(serverInfo.channels.passcodePG);
     if (args.length === 1) {
       pool.query("UPDATE `Runs` SET `Cancelled` =  1 WHERE `ID` = ?", [
         args[0],
@@ -27,9 +28,12 @@ const cancel = (msg, serverInfo, args, currentDate, client, pool, config) => {
                   message.edit({ embeds: [announceCancel] });
                 }).catch((error) => console.log(error))
             }
+            if (Math.round(row[0].Start ) < (Date.now() + 3600000)) {
+              passcodeChannel.setName("Arsenal Passwords");
+            }
             if (raidLeader != msg.author.id) {
               msg.reply(
-                `you cancelled run ${args[0]} scheduled by <@${raidLeader}>.`
+                `You cancelled run ${args[0]} scheduled by <@${raidLeader}>.`
               );
             } else {
               msg.reply(`you cancelled run ${args[0]}.`);

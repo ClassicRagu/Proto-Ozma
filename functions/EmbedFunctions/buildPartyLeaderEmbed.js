@@ -5,9 +5,7 @@ const emotes = config.serverInfo.emojiFull
 
 const buildPartyLeaderEmbed = (run, client, serverInfo) => {
   let runDate = new Date();
-  let runlDate = new Date();
   runDate.setTime(run[0].Start);
-  runlDate.setTime(run[0].Start);
   let cafe = client.guilds.cache.get(serverInfo.id);
   let runLeader = cafe.members.cache.get(run[0].RL).displayName;
   let runPL1 = "TBD";
@@ -53,7 +51,8 @@ const buildPartyLeaderEmbed = (run, client, serverInfo) => {
       `Party Leader Recruitment\n${run[0].ID}: ${run[0].Type} Run\nOn <t:${Math.round(run[0].Start / 1000)}:D> @<t:${Math.round(run[0].Start / 1000)}:t> (Your Local Time)`
     )
     .setDescription(
-      `**Raid Leader**: ${runLeader}` +
+      `**Raid Leader:** ${runLeader}` +
+      `\n\n**Run Notes:** ${run[0].Description}` +
       `\n\n**West/Art:**` +
       `\n${emotes.elementEarth} Earth: ${runPL1}` +
       `\n${emotes.elementWind} Wind: ${runPL2}` +
@@ -62,7 +61,7 @@ const buildPartyLeaderEmbed = (run, client, serverInfo) => {
       `\n${emotes.elementFire} Fire: ${runPL4}` +
       `\n${emotes.elementLightning} Lightning: ${runPL5}` +
       `\n${emotes.elementIce} Ice: ${runPL6}` +
-      `\n\n${emotes.bunny} **Support**: ${runPLS}` +
+      (!run[0].SupportArg ? `\n\n${emotes.bunny} **Support**: ${runPLS}` : ``) +
       (run[0].PerceptArg || run[0].SpiritDartArg ? `\n\n**Specific Roles:**` : ``) +
       (run[0].PerceptArg ? `\n${emotes.perception} Perception: ${perception}` : ``) +
       (run[0].SpiritDartArg ? `\n${emotes.spiritDart} Spirit Dart: ${spiritDart}` : ``) +

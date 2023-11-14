@@ -9,6 +9,7 @@ const { buildServerTimeEmbed,
   buildExternalAnnounceOngoing,
   buildExternalAnnounceNewRun,
   buildCountdownNoScheduleEmbed } = require('../EmbedFunctions/index')
+const exBlacklist = require("./exblacklist")
 
 Object.defineProperty(String.prototype, "hashCode", {
   value: function () {
@@ -29,18 +30,12 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let cafe = client.guilds.cache.get(serverInfo.id);
     let channelServerTime = client.channels.cache.get(
       serverInfo.channels.serverTime
-    );
-    let channelNextRunType = client.channels.cache.get(
-      serverInfo.channels.nextRunType
-    );
-    let channelNextRunTime = client.channels.cache.get(
-      serverInfo.channels.nextRunTime
-    );
-    let channelNextRunPasscode = client.channels.cache.get(
-      serverInfo.channels.nextRunPasscode
-    );
+    );    
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.schedule
+    );
+    let channelDRSSchedule = client.channels.cache.get(
+      serverInfo.channels.scheduleDRS
     );
     let channelArsenal = client.channels.cache.get(
       serverInfo.channels.runinprogress
@@ -51,14 +46,17 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let channelAnnounce = client.channels.cache.get(
       serverInfo.channels.baAnnounce
     );
-    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
+    let passcodeChannel = client.channels.cache.get(
+      serverInfo.channels.passcodePG
+    );
+    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo);
     channelServerTime.messages
       .fetch(serverInfo.posts.serverTime)
       .then((msg) => {
         msg.edit({ embeds: [embedServerTime] });
       });
     pool.query(
-      "SELECT `Type`, `Start`, `RL`, `Description`, `ID`, `Plusone` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 ORDER BY `Start` ASC LIMIT 10",
+      "SELECT `Type`, `Start`, `RL`, `Description`, `ID`, `Plusone`, `Newbie`, `EmbedID` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 and `DRS` = 0 ORDER BY `Start` ASC LIMIT 8",
       [currentDate.getTime()]
     )
       .then((row) => {
@@ -70,6 +68,12 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
           let runDate = getDate(runTime);
           let raidLeader = cafe.members.cache.get(run.RL).displayName;
           let runPlusone = "";
+          if (run.Newbie) {
+            runNewbie = serverInfo.emojiFull.grey;
+          }
+          if (!run.Newbie) {
+            runNewbie = serverInfo.emojiFull.sprout;
+          }
           if (run.Plusone ||
             Math.round(run.Start) < (Date.now() + 7200000)) {
             runPlusone = serverInfo.emojiFull.plusOneNo; //No
@@ -83,10 +87,10 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               "**" + `__${getDayOfWeek(runTime)} ${runDate}__` + "**" + `\n`;
             previousDate = runDate;
           }
-          if (run.Type === "OPEN") {
-            embedDescription += `**${run.ID}: ${run.Type} Run**\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n●Can I request a !plusone if I'm new to BA? ${runPlusone}\n\n`;
+          if (run.Type === "Normal") {
+            embedDescription += `**${run.ID}: ${run.Type} Run** ${runNewbie}\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n●Can I request a !plusone if I'm new to BA? ${runPlusone}\n[Run ${run.ID} Party Leader Sign-up](https://discord.com/channels/750103971187654736/958076900880830545/${run.EmbedID})\n\n`;
           } else {
-            embedDescription += `**${run.ID}: ${run.Type} Run**\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n\n`;
+            embedDescription += `**${run.ID}: ${run.Type} Run**\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n[Run ${run.ID} Party Leader Sign-up](https://discord.com/channels/750103971187654736/958076900880830545/${run.EmbedID})\n\n`;
           }
         });
         if (embedDescription === "") {
@@ -99,7 +103,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
           .then((msg) => {
             if (!msg.embeds[0].description.includes(embedHash)) {
               embedDescription +=
-                `\n\n[Google Calendar Link](${config.calendar})` +
+                `\n${serverInfo.emojiFull.sprout} = New Player Friendly Run` +
                 "\n||" +
                 "Post Hash: " +
                 embedHash +
@@ -109,9 +113,9 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
             }
           });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error));     
     pool.query(
-      "SELECT * FROM `Runs` WHERE `Start` < ? AND `CANCELLED` = 0 ORDER BY `Start` DESC LIMIT 1",
+      "SELECT * FROM `Runs` WHERE `Start` < ? AND `CANCELLED` = 0 and `DRS` = 0 ORDER BY `Start` DESC LIMIT 1",
       [currentDate.getTime() + 1200000]
     )
       .then((row) => {
@@ -126,7 +130,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
       }).catch((error) => console.log(error));
     pool
       .query(
-        "SELECT * FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 ORDER BY `Start` ASC LIMIT 1",
+        "SELECT * FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 AND `DRS` = 0 ORDER BY `Start` ASC LIMIT 1",
         [currentDate.getTime()]
       )
       .then((row) => {
@@ -136,6 +140,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
           client.user.setActivity("in " + getFineCountdownString(targetDate));
           let timeString = getCountdownString(targetDate);
           let embedCountdown = buildCountdownEmbed(serverInfo, cafe, row, targetDate)
+          let blistlead = row[0].RL
           channelServerTime.messages
             .fetch(serverInfo.posts.nextRun)
             .then((msg) => {
@@ -145,38 +150,11 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               ) {
                 msg.edit({ embeds: [embedCountdown] });
               }
-            });
-          let nextRunType =
-            serverInfo.emoji.nextRun + ' Next Run: "' + row[0].Type + '"';
-          let nextRunTime =
-            serverInfo.emoji.hourglass +
-            " " +
-            getDayOfWeek(targetDate) +
-            " " +
-            getServerTime(targetDate.getTime());
-          if (channelNextRunType.name !== nextRunType) {
-            channelNextRunType.setName(nextRunType);
-          }
-          if (getDate(currentDate) === getDate(targetDate)) {
-            nextRunTime =
-              serverInfo.emoji.hourglass +
-              " Today " +
-              getServerTime(targetDate.getTime());
-          }
-          if (channelNextRunTime.name !== nextRunTime) {
-            channelNextRunTime.setName(nextRunTime);
-          }
-          if (timeString === "1 hour") {
-            let passcodeDate = targetDate.getTime();
-            passcodeDate = passcodeDate - 1800000;
-            channelNextRunPasscode.setName(
-              serverInfo.emoji.passcode +
-              " Password at " +
-              getServerTime(passcodeDate)
-            );
-            channelNextRunPasscode.permissionOverwrites.edit(cafe.id, { ViewChannel: true })
-          }
-          if (timeString === "55 minutes." && row[0].PasscodeMain > 0) {
+            });          
+          if (timeString === "55min." && row[0].PasscodeMain > 0) {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
             client.users.cache
               .get(row[0].RL)
               .send(
@@ -185,7 +163,8 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 "\nThis message has been sent to Party Leaders 1-6." +
                 "\nPassword for Support will be " +
                 row[0].PasscodeSupport +
-                "\nThis message has been sent to the Support Party Leader.\nThe passwords will be posted automatically 30 minutes before the run."
+                "\nThis message has been sent to the Support Party Leader.\nThe passwords will be posted automatically 30 minutes before the run." +
+                `\n\nYou should probably have your party up by <t:${Math.round(row[0].Start / 1000 - 1800)}:t> if you're leading a party. idk it's your run so w/e`
               ).catch((error) => console.log(error));
             for (let i = 1; i < 8; i++) {
               if (i < 7) {
@@ -207,7 +186,8 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                       " Run, Party " +
                       elementsArray[i] +
                       "\nPassword will be " +
-                      row[0].PasscodeMain
+                      row[0].PasscodeMain +
+                      `\n\nPlease have your party up in the PF by <t:${Math.round(row[0].Start / 1000 - 1800)}:t>. If you can no longer lead a party, notify the raid lead ASAP.`
                     ).catch((error) => console.log(error));
                 }
               } else {
@@ -219,7 +199,8 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                       row[0].Type +
                       " Run, Support Party\nThe support password will be " +
                       row[0].PasscodeSupport +
-                      ", _please note this password is uniquely generated for the Support Party only_."
+                      ", _please note this password is uniquely generated for the Support Party only_." +
+                      `\n\nPlease have your party up in the PF by <t:${Math.round(row[0].Start / 1000 - 1800)}:t>. If you can no longer lead a party, notify the raid lead ASAP.`
                     ).catch((error) => console.log(error));
                 }
               }
@@ -249,18 +230,34 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 ).catch((error) => console.log(error));
             }
           }
-          if (timeString === "30 minutes.") {
-            channelNextRunPasscode.setName(
-              serverInfo.emoji.passcode + " PF Open"
-            );
+          if (timeString === "50min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "45min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "40min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "35min.") {
+            let targetDate = new Date();
+            targetDate.setTime(row[0].Start - 1800000);
+            passcodeChannel.setName(serverInfo.emoji.passcodeLock + "Password in " + getCountdownString(targetDate) + serverInfo.emoji.passcodeLock);
+          }
+          if (timeString === "30min.") {
+            passcodeChannel.setName(serverInfo.emoji.passcode + "Password Here" + serverInfo.emoji.passcode
+            );            
             if (row[0].PasscodeMain > 0) {
               let runPings = "<@&" + serverInfo.roles.flex.eurekaRaider + ">";
-              let passcodeChannel = serverInfo.channels.passcodePG;
+              let passcodeChannel = serverInfo.channels.passcodePG;              
               if (
-                row[0].Type === "RC" ||
-                row[0].Type === "RECLEAR"
-                //row[0].Type === "ReClear" ||
-                //row[0].Type === "Reclear"
+                row[0].Type === "Reclear"
               ) {
                 runPings = "<@&" + serverInfo.roles.flex.ozmaKiller + ">";
               }
@@ -276,24 +273,24 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
               client.channels.cache.get(serverInfo.channels.passcodePG).send({ embeds: [embedNoPasscode] });
             }
           }
-          if (timeString === "15 minutes.") {
+          if (timeString === "15min.") {
             channelArsenal.send(
               `There is currently an active BA run. Please keep this chat relevant *to the current run* and take any unrelated questions or comments to <#${serverInfo.channels.scheduleChat}>.\n\nRaid Leads, Gremlins, or staff not actively moderating: ${serverInfo.emojiFull.activeRun}`
             );
           }
-          if (timeString === "1 minutes.") {
+          if (timeString === "1min." || row[0].Cancelled === true) {
             let announceEdit = buildExternalAnnounceOngoing(row, cafe, `This ${config.serverAbbr} run has started.`)
             channelLeads.messages.fetch(row[0].EmbedID)
               .then((message) => {
                 message.delete();
               }).catch((error) => console.log(error));
             channelAnnounce.messages.fetch(row[0].AnnounceEmbedID)
-              .then((message) => {
-                message.edit({ embeds: [announceEdit] });
+              .then((msg) => {
+                msg.edit({ embeds: [announceEdit] });
               }).catch((error) => console.log(error));
-            channelNextRunPasscode.permissionOverwrites.edit(cafe.id, { ViewChannel: false })
+              passcodeChannel.setName("Arsenal Passwords");
           }
-          if ((Math.round(row[0].Start) < (Date.now() + 86400000)) && (row[0].AnnounceEmbedID === null) && (row[0].Cancelled === 0)) {
+          if ((Math.round(row[0].Start) < (Date.now() + 86400000)) && (row[0].AnnounceEmbedID === null) && (row[0].Cancelled === 0) && !(exBlacklist.includes(blistlead.toString())) && !(row[0].noAnnounce)) {
             let runID = row[0].ID;
             let announceEmbed = buildExternalAnnounceNewRun(row, cafe)
             client.channels.cache
@@ -315,14 +312,6 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 msg.edit({ embeds: [embedCountdown] });
               }
             });
-          let nextRunType = serverInfo.emoji.nextRun + ' Next Run: "TBC"';
-          let nextRunTime = serverInfo.emoji.hourglass + " See Schedule";
-          if (channelNextRunType.name !== nextRunType) {
-            channelNextRunType.setName(nextRunType);
-          }
-          if (channelNextRunTime.name !== nextRunTime) {
-            channelNextRunTime.setName(nextRunTime);
-          }
         }
       })
       .catch((error) => console.log(error));

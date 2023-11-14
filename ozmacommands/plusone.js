@@ -6,7 +6,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
       console.error('Failed to delete +1 message, most likely deleted beforehand'))
       , 120100)
     let cafe = client.guilds.cache.get(serverInfo.id);
-    pool.query("SELECT * FROM `Runs` WHERE `Start` > ? AND `Type` != 'RC' AND `Type` != 'MEME' AND `Type` != 'LOWMAN' AND `Type` != 'RECLEAR' AND  `Cancelled` = 0 AND `Plusone` = 0 ORDER BY `Start` ASC LIMIT 2", [currentDate.getTime()]
+    pool.query("SELECT * FROM `Runs` WHERE `Start` > ? AND `Type` = 'Normal' AND `Cancelled` = 0 AND `Plusone` = 0 and `DRS` = 0 ORDER BY `Start` ASC LIMIT 2", [currentDate.getTime()]
     )
       .then((row) => {
         if (row.length === 0) {
@@ -27,11 +27,11 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
           }
           else if (msg.member.roles.cache.has(serverInfo.roles.flex.ozmaKiller) && !msg.member.roles.cache.has(serverInfo.roles.special.raidLeader)) {
             msg.reply(
-              "Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unreact to that role in <#1035070783178952804> if you haven't cleared BA!");
+              `Looks like you have the Ozma Cleared role, !plusone is for first time clears only. Go unclick the cleared ozma question in <id:customize> if you haven't cleared BA!`);
           }
           else if (((Math.round(row[0].Start) > (Date.now() + 7200000)) && (Math.round(row[0].Start) < (Date.now() + 172800000)))) {
             msg.author.send(
-              `Hello! The next available run for +1's is ${row[0].ID}, which is a ${row[0].Type} run.\nStart time(Your device time): <t:${Math.round(row[0].Start / 1000)}:F>, <t:${Math.round(row[0].Start / 1000)}:R>.
+              `Hello! The next available run for +1's is ${row[0].ID}, which is a ${row[0].Type} run.\nStart time(Your device time): <t:${Math.round(row[0].Start / 1000)}:F>, <t:${Math.round(row[0].Start / 1000)}:R>.\nPasswords will ping in the arsenal-passwords channel at 30 minutes left.
             \nContact <@${raidLeader}> aka ${raidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`).catch((error) => console.log(error));
           }
           else if (row[1] === undefined) {
@@ -39,7 +39,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
           }
           else if (((Math.round(row[0].Start) < (Date.now() + 7200000)) && (Math.round(row[1].Start) < (Date.now() + 172800000)))) {
             msg.author.send(
-              `Hello! The next available run for +1's is ${row[1].ID}, which is a ${row[1].Type} run.\nStart time(Your device time): <t:${Math.round(row[1].Start / 1000)}:F>, <t:${Math.round(row[1].Start / 1000)}:R>.
+              `Hello! The next available run for +1's is ${row[1].ID}, which is a ${row[1].Type} run.\nStart time(Your device time): <t:${Math.round(row[1].Start / 1000)}:F>, <t:${Math.round(row[1].Start / 1000)}:R>.\nPasswords will ping in the arsenal-passwords channel at 30 minutes left.
             \nContact <@${nextraidLeader}> aka ${nextraidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`).catch((error) => console.log(error));
           }
           else {
