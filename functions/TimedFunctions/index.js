@@ -1,3 +1,4 @@
 module.exports = {
-    ...require('./timedFunctions'), 
-    ...require('./timedFunctionsDRS')}
+  ...require('./timedFunctions'),
+  ...require('./timedFunctionsDRS')
+}

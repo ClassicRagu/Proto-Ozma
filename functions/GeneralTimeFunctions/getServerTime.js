@@ -1,16 +1,16 @@
-const {addZero} = require('./addZero')
+const { addZero } = require('./addZero')
 
 const getServerTime = (targetTime) => {
- let currentDate = new Date();
- if (typeof targetTime !== "undefined") {
-   currentDate.setTime(targetTime);
- }
- return (
-   addZero(currentDate.getUTCHours()) +
-   ":" +
-   addZero(currentDate.getUTCMinutes()) +
-   " ST"
- );
+  let currentDate = new Date()
+  if (typeof targetTime !== 'undefined') {
+    currentDate.setTime(targetTime)
+  }
+  return (
+    addZero(currentDate.getUTCHours()) +
+    ':' +
+    addZero(currentDate.getUTCMinutes()) +
+    ' ST'
+  )
 }
 
-module.exports = {getServerTime}
+module.exports = { getServerTime }

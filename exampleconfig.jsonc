@@ -1,0 +1,128 @@
+{ // Remember to rename this file to config.json to use it!
+  "token": "", // Discord bot token
+  "serverAbbr": "", // discord server abbreviation
+  "serverName": "", // discord server name
+  "datacenter": "", // FFXIV data center
+  "discordLink": "", // discord invite link
+  "sqlLogin": {
+    "host": "", // 127.0.0.1 for local
+    "user": "",
+    "password": "",
+    "database": "",
+    "connectionLimit": 5
+  },
+  "calendar": "", //calendar link (leave blank if none)
+  "serverInfo": {
+    "channels": {
+      "serverTime": "", // arsenal schedule
+      "schedule": "", // arsenal schedule
+      "partyLeader": "", // party-leads
+      "passcodePG": "", // arsenal passwords
+      "runinprogress": "", // arsenal cat
+      "scheduleChat": "", // schedule-discussion
+      "baAnnounce": "", // schedule-broadcast
+      "extAnnounce": "", // external BA id
+      "recruitingDRS": "", // drs recruiting channel id
+      "drsSchedule": "", // drs schedule channel id
+      "drsRecruiting": "", // drs recruiting channel id
+      "drsAnnounce": "" // drs announcements channel id
+    },
+    "embedColor": "", // #hexvalue for the color of embeds
+    "emoji": { // emoji ids
+      "bunny": "1174058801876443277",
+      "elementEarth": "1⃣",
+      "elementFire": "4⃣",
+      "elementIce": "6⃣",
+      "elementLightning": "5⃣",
+      "elementWater": "3⃣",
+      "elementWind": "2⃣",
+      "plusOneNo": "👎",
+      "plusOneYes": "👍",
+      "true": "✔",
+      "false": "❌",
+      "deafened": "🔇",
+      "hourglass": "⏳",
+      "nextRun": "⏭",
+      "passcode": "🔑",
+      "perception": "eye",
+      "spiritDart": "football",
+      "sprout": "evergreen_tree",
+      "grey": "grey_exclamation",
+      "accelBomb": "1174058801876443277",
+      "accelBomb1": "1174058801876443277",
+      "accelBomb2": "1174058801876443277",
+      "accelBomb3": "1174058801876443277",
+      "protoJazzma": "1174058801876443277"
+    },
+    "emojiFull": { //full emojis including ids and names
+      "bunny": "<:BannerofFirmResolve:1174058801876443277>",
+      "elementEarth": "1⃣",
+      "elementFire": "4⃣",
+      "elementIce": "6⃣",
+      "elementLightning": "5⃣",
+      "elementWater": "3⃣",
+      "elementWind": "2⃣",
+      "plusOneNo": "👎",
+      "plusOneYes": "👍",
+      "activeRun": "✅",
+      "perception": "👁️",
+      "spiritDart": "🏈",
+      "sprout": "🌲",
+      "grey": "❕",
+      "accelBomb": "<:BannerofFirmResolve:1174058801876443277>",
+      "accelBomb1": "<:BannerofFirmResolve:1174058801876443277>",
+      "accelBomb2": "<:BannerofFirmResolve:1174058801876443277>",
+      "accelBomb3": "<:BannerofFirmResolve:1174058801876443277>",
+      "protoJazzma": "<:BannerofFirmResolve:1174058801876443277>"
+    },
+    "emojiName": { //emoji names
+      "bunny": "BannerofFirmResolve",
+      "elementEarth": "1⃣",
+      "elementFire": "4⃣",
+      "elementIce": "6⃣",
+      "elementLightning": "5⃣",
+      "elementWater": "3⃣",
+      "elementWind": "2⃣",
+      "plusOneNo": "thumbsdown",
+      "plusOneYes": "thumbsup",
+      "activeRun": "white_check_mark",
+      "perception": "eye",
+      "spiritDart": "football",
+      "sprout": "evergreen_tree",
+      "grey": "grey_exclamation",
+      "accelBomb": "BannerofFirmResolve",
+      "accelBomb1": "BannerofFirmResolve",
+      "accelBomb2": "BannerofFirmResolve",
+      "accelBomb3": "BannerofFirmResolve",
+      "protoJazzma": "BannerofFirmResolve"
+    },
+    "id": "", // server id
+    "posts": {
+      "schedule": "1037177360375619664", // BA schedule message id
+      "serverTime": "1037177344995102741", // BA server time message id
+      "nextRun": "1037177353610199041", // BA next run message id
+      "drsSchedule": "1174055753141735485" // DRS schedule message id
+    },
+    "roles": { // role ids
+      "flex": {
+        "eurekaRaider": "", // BA role
+        "ozmaKiller": "", // BA cleared
+        "baCaller": "", // BA caller
+        "drsRaider": "" // DRS role
+      },
+      "special": {
+        "ozmaChampion": "", // 10 BA cleaers
+        "raidLeader": "", // BA raid lead
+        "drsRaidLeader": "", // DRS raid lead
+        "admin": ""
+      }
+    },
+    "announceGifs": { // announcement images for cross dc posts
+      "announceNew": "https://cdn.discordapp.com/attachments/415080317506945024/999188851547451442/ozmacleanF.gif",
+      "announceCanceled": "https://cdn.discordapp.com/attachments/415080317506945024/999129063522312193/ezgif.com-gif-maker_4.gif",
+      "announceStarted": "https://cdn.discordapp.com/attachments/415080317506945024/999168912920944760/ezgif.com-gif-maker_5.gif",
+      "announceNewDRS": "https://media.discordapp.net/attachments/750126158624063550/1173307723337715732/muhqueen.gif"
+    },
+    "announceEmbedColor": "" // #hexvalue for announcement embeds
+  }
+}
