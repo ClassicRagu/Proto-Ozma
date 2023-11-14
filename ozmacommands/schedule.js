@@ -30,7 +30,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
     )
   ) {
     let channelRecruitingDRS = client.channels.cache.get(
-      serverInfo.channels.drsRecruiting
+      serverInfo.channels.recruitingDRS
     )
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.scheduleChat
@@ -111,7 +111,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         } else {
           postArray = args.slice(5)
         }
-        if (msg.channel.id === serverInfo.channels.drsRecruiting) {
+        if (msg.channel.id === serverInfo.channels.recruitingDRS) {
           fullDescription = postArray.join(' ')
           valueDescription = regex.exec(fullDescription)
         } else valueDescription = postArray.join(' ')
