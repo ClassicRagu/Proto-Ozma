@@ -2,7 +2,8 @@ const { Client,
   Events,
   GatewayIntentBits,
   MessageReaction,
-  Partials
+  Partials,
+  EmbedBuilder
 } = require("discord.js");
 const { getLocalTime } = require('./functions/GeneralTimeFunctions/index')
 const { buildPartyLeaderEmbed } = require('./functions/EmbedFunctions/index')
@@ -27,7 +28,9 @@ const serverInfo = config.serverInfo
 const blacklist = require("./blacklist"); //group lead signup blacklist
 const ozmablack = require("./ozmablack"); //Countermeasures
 const { commands } = require("./commands");
-const { timedFunctions } = require("./functions/TimedFunctions/timedFunctions");
+const { timedFunctions, timedFunctionsDRS } = require("./functions/TimedFunctions/index");
+
+const Tesseract = require("tesseract.js");
 
 client.once(Events.ClientReady, async () => {
   console.log("[" + getLocalTime() + "] Connected to Discord");
@@ -43,10 +46,39 @@ client.on(Events.MessageUpdate, (oldMessage, newMessage) => {
   }
 });
 
+client.on('messageCreate', (message) =>{
+  if (message.content === 'starterembed' && message.member.roles.cache.has(serverInfo.roles.special.admin)) {
+    const embed = new EmbedBuilder()
+      .setDescription('Post Hash: -577101927');
+    message.channel.send({ embeds: [embed]});
+  }
+});
+
+/*client.on("messageCreate", (msg) => {
+  let channelRoles = client.channels.cache.get(
+    serverInfo.channels.rolesChannel);
+  if (msg.channel.id = channelRoles && msg.attachments.size > 0) {
+    msg.attachments.forEach((attachment) => {
+      var ImageURL = attachment.proxyURL;
+      Tesseract.recognize(
+        ImageURL,
+        "eng",
+        { logger: (m) => console.log(m) }   
+      ).then(({ data: {text} }) => {
+        console.log(text);
+        if (text.includes("Your Side I")) {
+          msg.reply('You can find the BA cleared role in <id:customize>. Be sure to check the pins before submitting!')
+        };
+      })
+    });
+  }
+});*/
+
 //Timed Functions
 function clockFunctions() {
   let currentDate = new Date();
   timedFunctions(client, serverInfo, pool, currentDate, config)
+  timedFunctionsDRS(client, serverInfo, pool, currentDate, config)
   var Interval = (60 - currentDate.getUTCSeconds()) * 1000 + 5;
   setTimeout(clockFunctions, Interval);
 }

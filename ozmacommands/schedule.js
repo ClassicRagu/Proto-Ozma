@@ -17,28 +17,45 @@ const presetOffsets = {
 }
 
 const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
+  let cafe = client.guilds.cache.get(serverInfo.id);
   if (
-    msg.member.roles.cache.has(serverInfo.roles.special.raidLeader)
+    msg.member.roles.cache.has(serverInfo.roles.special.raidLeader) || msg.member.roles.cache.has(serverInfo.roles.special.drsRaidLeader || msg.member.roles.cache.has(serverInfo.roles.special.admin))
   ) {
+    let channelRecruitingDRS = client.channels.cache.get(
+      serverInfo.channels.drsRecruiting);
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.scheduleChat);
-    if (msg.channel.id != channelSchedule) {
-      commandError(msg, `Please schedule BA runs in <#${serverInfo.channels.scheduleChat}>`);
+    let drsRaidgoer = cafe.roles.cache.get(
+      serverInfo.roles.flex.drsRaider).id;
+    if (msg.channel.id != channelRecruitingDRS && msg.channel.id != channelSchedule) {
+      commandError(msg, `Please schedule runs in the appropriate channel:\nBA:<#${serverInfo.channels.scheduleChat}>\nDRS:<#${serverInfo.channels.recruitingDRS}>`);
       return;
     }
+    /*if (msg.member.roles.cache != drsRaidLeader && msg.channel.id == channelRecruitingDRS) {
+      commandError(msg, `You do not have the appropriate role to schedule that.`);
+      return;
+    }
+    if (msg.member.roles.cache != raidLeader && msg.channel.id == channelSchedule) {
+      commandError(msg, `You do not have the appropriate role to schedule that.`);
+      return;
+    }
+    if (!msg.member.roles.cache.has(serverInfo.roles.special.raidDRSLeader) && msg.channel.id == channelRecruitingDRS) {
+      commandError(msg, `You do not have the appropriate role to schedule that.`);
+      return;
+    }*/
     if (args[0] === "add" || args[0] === "nopw") {
       let postFormat =
-        "Format: _!schedule add <type> <dd-mmm-yy> <hh:mm> (optional: description)_\n" +
+        "Format: _!schedule add <type> <dd-mmm-yy> <TMZ> <hh:mm> (optional: arguments) (optional: description)_\n" +
         "or _!schedule add <type> <unix timestamp> (optional: description)_\n" +
-        "i.e. _!schedule add open 16-jun-20 19:00_\n" +
-        "i.e. _!schedule add open 1592334000_\n" +
+        "i.e. _!schedule add clear 16-jun-20 19:00_\n" +
+        "i.e. _!schedule add prog 1592334000_\n" +
         "i.e. _!schedule add open 16-jun-20 19:00 Description goes here_\n" +
         "i.e. _!schedule add open 1592334000 Description goes here_";
       let valueDescription = "N/A";
       if (args.length < 4) {
         commandError(msg, "Insufficient information provided.\n" + postFormat);
         return;
-      }
+      }      
       const isUnixTime = !isNaN(args[2])
       const isTimezone = !isUnixTime && args[4] !== undefined && presetOffsets[args[4].toLowerCase()] !== undefined
       const hasAdditionalArgs = (isUnixTime && args[3] !== undefined && (args[3].startsWith('--') || args[3].startsWith('—')))
@@ -56,6 +73,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
       }
       if ((isUnixTime && args.length > 3) || args.length > 4) {
         let postArray = []
+        let regex = /\S.+/m
         if (isUnixTime && !hasAdditionalArgs) {
           postArray = args.slice(3);
         } else if ((!hasAdditionalArgs && !isTimezone) || (isUnixTime && hasAdditionalArgs)) {
@@ -65,7 +83,10 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         } else {
           postArray = args.slice(5);
         }
-        valueDescription = postArray.join(" ");
+        if (msg.channel.id === "1167469922830536704") {
+          fullDescription = postArray.join(" ");
+          valueDescription = regex.exec(fullDescription);
+        } else valueDescription = postArray.join(" ");
       }
       let runType = getRunType(args);
       let runDate = new Date();
@@ -128,10 +149,9 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
             return;
           } else {
             pool
-              .query(
-                //"INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `Newbie`, `SupportArg`)"
-                "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `Newbie`, `SupportArg`, `noAnnounce`)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-', ?, ?, ?, ?)",
+              .query(                
+                "INSERT INTO `Runs` (`Type`, `Start`, `PasscodeMain`, `PasscodeSupport`, `Plusone`, `PerceptArg`, `SpiritDartArg`, `rlName`, `RL`, `PL1`, `PL2`, `PL3`, `PL4`, `PL5`, `PL6`, `PLS`, `Percept`, `SpiritDart`, `Description`, `EmbedID`, `Newbie`, `SupportArg`, `noAnnounce`, `DRS`)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '-', '-', '-', '-', '-', '-', '-', '-', '-', ?, ?, ?, ?, ?, ?)",
                 [
                   runType,
                   runTime,
@@ -143,28 +163,37 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                   msg.author.tag,
                   msg.member.id,
                   valueDescription,
+                  msg.id,
                   hasAdditionalArgs && argumentArg.includes('u'),
                   hasAdditionalArgs && argumentArg.includes('s'),
-                  hasAdditionalArgs && argumentArg.includes('b')
+                  hasAdditionalArgs && argumentArg.includes('b'),
+                  msg.channel.id === "1167469922830536704",
                 ]
               )
               .then((row) => {
                 let runID = row.insertId;
-                pool.query("SELECT * FROM `Runs` WHERE `ID` = ?", [runID])
+                pool
+                  .query("SELECT * FROM `Runs` WHERE `ID` = ?", [runID])
                   .then((row) => {
-                    /*if (args[1] = "open" || "meme") {
-                      msg.reply(
-                        "Please use normal, non-standard, and reclear for run-types in the future"
-                      )
-                    }*/
+                    if (msg.channel.id === "750759380877574314")
                     msg.channel.send(
                       `${runType} Run added: <t:${Math.round(row[0].Start / 1000)}:F>.\nRun ID: ${runID}`
                     );
+                    if (msg.channel.id === "1167469922830536704") {
+                      msg.startThread({
+                        name: `${valueDescription}`,
+                        autoArchiveDuration: '10080'
+                      }).then(async (createdThread) => {
+                        await createdThread.send(
+                          `${runType} Run added: <t:${Math.round(row[0].Start / 1000)}:F>.\nRun ID: ${runID}`
+                        );
+                      });
+                    };
                   })
                 pool
                   .query("SELECT * FROM `Runs` WHERE `ID` = ?", [runID])
                   .then((run) => {
-                    if (run[0].PasscodeMain > 0) {
+                    if (run[0].PasscodeMain > 0 && !run[0].DRS) {
                       let embedPartyLeader = buildPartyLeaderEmbed(run, client, serverInfo);
                       client.channels.cache
                         .get(serverInfo.channels.partyLeader)
@@ -176,7 +205,6 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                           await sentEmbed.react(serverInfo.emoji.elementFire);
                           await sentEmbed.react(serverInfo.emoji.elementLightning);
                           await sentEmbed.react(serverInfo.emoji.elementIce);
-                          //await sentEmbed.react(serverInfo.emoji.bunny);
                           if (!run[0].SupportArg) {
                             await sentEmbed.react(serverInfo.emoji.bunny);
                           }
@@ -186,7 +214,8 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                           if (run[0].SpiritDartArg) {
                             await sentEmbed.react(serverInfo.emoji.spiritDart);
                           }
-                          pool.query("UPDATE `Runs` SET `EmbedID` = ? WHERE `ID` = ?", [sentEmbed.id, runID]);
+                          pool
+                            .query("UPDATE `Runs` SET `EmbedID` = ? WHERE `ID` = ?", [sentEmbed.id, runID]);
                         });
                     }
                   })

@@ -20,6 +20,12 @@ const getRunType = (args) => {
             return "Non-Standard";
         case "meme":
             return "Non-Standard";
+        case "fresh":
+            return "Fresh-prog";
+        case "frsh":
+            return "Fresh-prog";
+        case "sofresh":
+            return "So Fresh, So Clean";
         case "reclear":
             return "Reclear";
         case "rc":
@@ -28,6 +34,28 @@ const getRunType = (args) => {
             return "Reclear";
         case "reclr":
             return "Reclear";
+        case "fresh":
+            return "Early-Prog";
+        case "early":
+            return "Early-Prog";
+        case "earlyprog":
+            return "Early-Prog";
+        case "erly":
+            return "Early-Prog";
+        case "early-prog":
+            return "Early-Prog";
+        case "ta+":
+            return "TA+";
+        case "ta":
+            return "TA+";
+        case "clear":
+            return "TA+";
+        case "any":
+            return "Any-Prog"
+        case "anyprog":
+            return "Any-Prog"
+        case "ap":
+            return "Any-Prog"
         default: return "Normal"
     }
 }

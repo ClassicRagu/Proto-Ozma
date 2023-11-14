@@ -34,6 +34,9 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.schedule
     );
+    let channelDRSSchedule = client.channels.cache.get(
+      serverInfo.channels.scheduleDRS
+    );
     let channelArsenal = client.channels.cache.get(
       serverInfo.channels.runinprogress
     );
@@ -46,9 +49,6 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let passcodeChannel = client.channels.cache.get(
       serverInfo.channels.passcodePG
     );
-    let passcodeChannel2 = client.channels.cache.get(
-      serverInfo.channels.passcode2
-    );
     let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo);
     channelServerTime.messages
       .fetch(serverInfo.posts.serverTime)
@@ -56,7 +56,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
         msg.edit({ embeds: [embedServerTime] });
       });
     pool.query(
-      "SELECT `Type`, `Start`, `RL`, `Description`, `ID`, `Plusone`, `Newbie` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 ORDER BY `Start` ASC LIMIT 10",
+      "SELECT `Type`, `Start`, `RL`, `Description`, `ID`, `Plusone`, `Newbie`, `EmbedID` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 and `DRS` = 0 ORDER BY `Start` ASC LIMIT 8",
       [currentDate.getTime()]
     )
       .then((row) => {
@@ -88,9 +88,9 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
             previousDate = runDate;
           }
           if (run.Type === "Normal") {
-            embedDescription += `**${run.ID}: ${run.Type} Run** ${runNewbie}\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n●Can I request a !plusone if I'm new to BA? ${runPlusone}\n\n`;
+            embedDescription += `**${run.ID}: ${run.Type} Run** ${runNewbie}\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n●Can I request a !plusone if I'm new to BA? ${runPlusone}\n[Run ${run.ID} Party Leader Sign-up](https://discord.com/channels/750103971187654736/958076900880830545/${run.EmbedID})\n\n`;
           } else {
-            embedDescription += `**${run.ID}: ${run.Type} Run**\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n\n`;
+            embedDescription += `**${run.ID}: ${run.Type} Run**\n●*Your Local Start Time:* __<t:${Math.round(run.Start / 1000)}:F>__\n●__Raid Leader__: ${raidLeader}\n●__Run Notes:__ ${run.Description}\n[Run ${run.ID} Party Leader Sign-up](https://discord.com/channels/750103971187654736/958076900880830545/${run.EmbedID})\n\n`;
           }
         });
         if (embedDescription === "") {
@@ -104,7 +104,6 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
             if (!msg.embeds[0].description.includes(embedHash)) {
               embedDescription +=
                 `\n${serverInfo.emojiFull.sprout} = New Player Friendly Run` +
-                `\n\n[Google Calendar Link](${config.calendar})` +
                 "\n||" +
                 "Post Hash: " +
                 embedHash +
@@ -114,9 +113,9 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
             }
           });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error));     
     pool.query(
-      "SELECT * FROM `Runs` WHERE `Start` < ? AND `CANCELLED` = 0 ORDER BY `Start` DESC LIMIT 1",
+      "SELECT * FROM `Runs` WHERE `Start` < ? AND `CANCELLED` = 0 and `DRS` = 0 ORDER BY `Start` DESC LIMIT 1",
       [currentDate.getTime() + 1200000]
     )
       .then((row) => {
@@ -131,7 +130,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
       }).catch((error) => console.log(error));
     pool
       .query(
-        "SELECT * FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 ORDER BY `Start` ASC LIMIT 1",
+        "SELECT * FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 AND `DRS` = 0 ORDER BY `Start` ASC LIMIT 1",
         [currentDate.getTime()]
       )
       .then((row) => {
@@ -286,11 +285,10 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 message.delete();
               }).catch((error) => console.log(error));
             channelAnnounce.messages.fetch(row[0].AnnounceEmbedID)
-              .then((message) => {
-                message.edit({ embeds: [announceEdit] });
+              .then((msg) => {
+                msg.edit({ embeds: [announceEdit] });
               }).catch((error) => console.log(error));
               passcodeChannel.setName("Arsenal Passwords");
-              //passcodeChannel2.permissionOverwrites.edit(cafe.id, { ViewChannel: false });
           }
           if ((Math.round(row[0].Start) < (Date.now() + 86400000)) && (row[0].AnnounceEmbedID === null) && (row[0].Cancelled === 0) && !(exBlacklist.includes(blistlead.toString())) && !(row[0].noAnnounce)) {
             let runID = row[0].ID;
@@ -314,14 +312,6 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
                 msg.edit({ embeds: [embedCountdown] });
               }
             });
-          /*let nextRunType = serverInfo.emoji.nextRun + ' Next Run: "TBC"';
-          let nextRunTime = serverInfo.emoji.hourglass + " See Schedule";
-          if (channelNextRunType.name !== nextRunType) {
-            channelNextRunType.setName(nextRunType);
-          }
-          if (channelNextRunTime.name !== nextRunTime) {
-            channelNextRunTime.setName(nextRunTime);
-          }*/
         }
       })
       .catch((error) => console.log(error));

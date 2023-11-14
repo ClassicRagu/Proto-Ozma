@@ -5,9 +5,7 @@ const emotes = config.serverInfo.emojiFull
 
 const buildPartyLeaderEmbed = (run, client, serverInfo) => {
   let runDate = new Date();
-  let runlDate = new Date();
   runDate.setTime(run[0].Start);
-  runlDate.setTime(run[0].Start);
   let cafe = client.guilds.cache.get(serverInfo.id);
   let runLeader = cafe.members.cache.get(run[0].RL).displayName;
   let runPL1 = "TBD";

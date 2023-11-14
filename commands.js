@@ -24,7 +24,7 @@ const commands = (msg, serverInfo, client, pool, config, ozmablack) => {
     command === "schedule"
   ) {
     schedule(msg, serverInfo, args, currentDate, client, pool)
-  }
+  } 
   if (command === "waymark" || command === "waymarks" || command === "ohimarks" || command === "ohimark") {
     waymarks(msg, args)
   }
