@@ -5,23 +5,23 @@ const emoteNames = config.serverInfo.emojiName
 const getReactionPartyNumber = (emojiName) => {
   switch (emojiName) {
     case emoteNames.elementEarth:
-      return "PL1"
+      return 'PL1'
     case emoteNames.elementWind:
-      return "PL2"
+      return 'PL2'
     case emoteNames.elementWater:
-      return "PL3"
+      return 'PL3'
     case emoteNames.elementFire:
-      return "PL4"
+      return 'PL4'
     case emoteNames.elementLightning:
-      return "PL5"
+      return 'PL5'
     case emoteNames.elementIce:
-      return "PL6"
+      return 'PL6'
     case emoteNames.bunny:
-      return "PLS"
+      return 'PLS'
     case emoteNames.perception:
-      return "Percept"
+      return 'Percept'
     case emoteNames.spiritDart:
-      return "SpiritDart"
+      return 'SpiritDart'
     default:
       return 0
   }
