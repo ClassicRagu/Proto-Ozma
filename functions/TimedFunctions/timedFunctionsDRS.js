@@ -25,11 +25,8 @@ const timedFunctionsDRS = (client, serverInfo, pool, currentDate, config) => {
     let channelDRSSchedule = client.channels.cache.get(
       serverInfo.channels.drsSchedule
     )
-    let channelSchedule = client.channels.cache.get(
-      serverInfo.channels.drsSchedule
-    )
     let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
-    channelSchedule.messages
+    channelDRSSchedule.messages
       .fetch(serverInfo.posts.drsServerTime)
       .then((msg) => {
         msg.edit({ embeds: [embedServerTime] })
