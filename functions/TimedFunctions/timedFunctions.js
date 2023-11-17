@@ -38,9 +38,6 @@ Object.defineProperty(String.prototype, 'hashCode', {
 const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
   if (client.ws.status === 0) {
     let cafe = client.guilds.cache.get(serverInfo.id)
-    let channelServerTime = client.channels.cache.get(
-      serverInfo.channels.serverTime
-    )
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.schedule
     )
@@ -57,7 +54,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
       serverInfo.channels.passcodePG
     )
     let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
-    channelServerTime.messages
+    channelSchedule.messages
       .fetch(serverInfo.posts.serverTime)
       .then((msg) => {
         msg.edit({ embeds: [embedServerTime] })
@@ -176,7 +173,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
             targetDate
           )
           let blistlead = row[0].RL
-          channelServerTime.messages
+          channelSchedule.messages
             .fetch(serverInfo.posts.nextRun)
             .then((msg) => {
               if (
@@ -404,7 +401,7 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
           }
         } else {
           let embedCountdown = buildCountdownNoScheduleEmbed(serverInfo)
-          channelServerTime.messages
+          channelSchedule.messages
             .fetch(serverInfo.posts.nextRun)
             .then((msg) => {
               if (msg.embeds[0].title != embedCountdown.title) {

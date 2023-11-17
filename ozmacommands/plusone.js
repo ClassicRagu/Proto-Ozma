@@ -23,6 +23,9 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
             'Sorry, there are no runs scheduled at this time, please check back later.'
           )
         } else {
+          let passcodeChannel = client.channels.cache.get(
+            serverInfo.channels.passcodePG
+          )
           let raidLeader = cafe.members.cache.get(row[0].RL).id
           let raidLeaderT = cafe.members.cache.get(row[0].RL).displayName
           let nextraidLeader = row[1]
@@ -67,7 +70,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
                   row[0].Start / 1000
                 )}:F>, <t:${Math.round(
                   row[0].Start / 1000
-                )}:R>.\nPasswords will ping in the arsenal-passwords channel at 30 minutes left.
+                )}:R>.\nPasswords will ping in ${passcodeChannel} at 30 minutes left.
             \nContact <@${raidLeader}> aka ${raidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
               )
               .catch((error) => console.log(error))
@@ -89,7 +92,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
                   row[1].Start / 1000
                 )}:F>, <t:${Math.round(
                   row[1].Start / 1000
-                )}:R>.\nPasswords will ping in the arsenal-passwords channel at 30 minutes left.
+                )}:R>.\nPasswords will ping in ${passcodeChannel} at 30 minutes left.
             \nContact <@${nextraidLeader}> aka ${nextraidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
               )
               .catch((error) => console.log(error))
