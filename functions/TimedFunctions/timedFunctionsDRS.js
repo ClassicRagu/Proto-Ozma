@@ -1,5 +1,6 @@
 const { getDate, getDayOfWeek } = require('../GeneralTimeFunctions/index')
 const {
+  buildServerTimeEmbed,
   buildDRSEmbed,
   buildExternalAnnounceNewDRS
 } = require('../EmbedFunctions/index')
@@ -24,6 +25,15 @@ const timedFunctionsDRS = (client, serverInfo, pool, currentDate, config) => {
     let channelDRSSchedule = client.channels.cache.get(
       serverInfo.channels.drsSchedule
     )
+    let channelSchedule = client.channels.cache.get(
+      serverInfo.channels.drsSchedule
+    )
+    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
+    channelSchedule.messages
+      .fetch(serverInfo.posts.drsServerTime)
+      .then((msg) => {
+        msg.edit({ embeds: [embedServerTime] })
+      })
     pool
       .query(
         'SELECT `Type`, `Start`, `RL`, `ID`, `EmbedID`, `Description`, `DRS` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 and `DRS` = 1 ORDER BY `Start` ASC LIMIT 8',
@@ -71,7 +81,7 @@ const timedFunctionsDRS = (client, serverInfo, pool, currentDate, config) => {
       .catch((error) => console.log(error))
     pool
       .query(
-        'SELECT * FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 and `DRS` = 1 ORDER BY `ID` DESC LIMIT 2',
+        'SELECT * FROM `Runs` WHERE `Start` > ? AND `DRS` = 1 ORDER BY `ID` DESC LIMIT 2',
         [currentDate.getTime()]
       )
       .then((row) => {
@@ -92,6 +102,19 @@ const timedFunctionsDRS = (client, serverInfo, pool, currentDate, config) => {
               .catch((error) => console.log(error))
           }
         }
+        if (row[0].Start - 120000 < Date.now() && !row[0].Cancelled) {
+          let announceEdit = buildExternalAnnounceOngoingDRS(
+            row,
+            cafe,
+            `This ${config.serverAbbr} run has started.`
+          )
+          channelAnnounce.messages
+          .fetch(row[0].AnnounceEmbedID)
+          .then((msg) => {
+            msg.edit({ embeds: [announceEdit] })
+          })
+          .catch((error) => console.log(error))
+        }        
       })
       .catch((error) => console.log(error))
   }
