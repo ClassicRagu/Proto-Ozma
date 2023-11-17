@@ -22,7 +22,7 @@
       "scheduleChat": "", // schedule-discussion
       "baAnnounce": "", // schedule-broadcast
       "extAnnounce": "", // external BA id
-      "recruitingDRS": "", // drs recruiting channel id
+      "drsRecruiting": "", // drs recruiting channel id
       "drsSchedule": "", // drs schedule channel id
       "drsAnnounce": "" // drs announcements channel id
     },

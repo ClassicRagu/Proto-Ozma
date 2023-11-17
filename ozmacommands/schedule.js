@@ -26,11 +26,11 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
     msg.member.roles.cache.has(serverInfo.roles.special.raidLeader) ||
     msg.member.roles.cache.has(
       serverInfo.roles.special.drsRaidLeader ||
-        msg.member.roles.cache.has(serverInfo.roles.special.admin)
+    msg.member.roles.cache.has(serverInfo.roles.special.admin)
     )
   ) {
     let channelRecruitingDRS = client.channels.cache.get(
-      serverInfo.channels.recruitingDRS
+      serverInfo.channels.drsRecruiting
     )
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.scheduleChat
@@ -43,7 +43,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
     ) {
       commandError(
         msg,
-        `Please schedule runs in the appropriate channel:\nBA:<#${serverInfo.channels.scheduleChat}>\nDRS:<#${serverInfo.channels.recruitingDRS}>`
+        `Please schedule runs in the appropriate channel:\nBA:<#${serverInfo.channels.scheduleChat}>\nDRS:<#${serverInfo.channels.drsRecruiting}>`
       )
       return
     }
@@ -111,7 +111,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
         } else {
           postArray = args.slice(5)
         }
-        if (msg.channel.id === serverInfo.channels.recruitingDRS) {
+        if (msg.channel.id === serverInfo.channels.drsRecruiting) {
           fullDescription = postArray.join(' ')
           valueDescription = regex.exec(fullDescription)
         } else valueDescription = postArray.join(' ')
@@ -197,7 +197,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                   hasAdditionalArgs && argumentArg.includes('u'),
                   hasAdditionalArgs && argumentArg.includes('s'),
                   hasAdditionalArgs && argumentArg.includes('b'),
-                  msg.channel.id === serverInfo.channels.recruitingDRS
+                  msg.channel.id === serverInfo.channels.drsRecruiting
                 ]
               )
               .then((row) => {
@@ -211,7 +211,7 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
                           row[0].Start / 1000
                         )}:F>.\nRun ID: ${runID}`
                       )
-                    if (msg.channel.id === serverInfo.channels.recruitingDRS) {
+                    if (msg.channel.id === serverInfo.channels.drsRecruiting) {
                       msg
                         .startThread({
                           name: `${valueDescription}`,
