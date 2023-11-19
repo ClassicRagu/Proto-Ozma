@@ -48,7 +48,7 @@ client.once(Events.ClientReady, async () => {
 })
 
 client.on(Events.MessageUpdate, (oldMessage, newMessage) => {
-  if (newMessage.content.includes('[Original Message Deleted]')) {
+  if (newMessage.content === ('[Original Message Deleted]')) {
     newMessage.delete()
   }
 })
