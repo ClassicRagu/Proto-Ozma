@@ -1,3 +1,7 @@
+const {
+  buildPlusOneEmbed
+} = require('../functions/EmbedFunctions/index')
+
 const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
   if (msg.channel.type != 'dm') {
     setTimeout(
@@ -11,6 +15,8 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
           ),
       120100
     )
+    
+    let embedPlusOne = buildPlusOneEmbed( serverInfo )
     let cafe = client.guilds.cache.get(serverInfo.id)
     pool
       .query(
@@ -21,7 +27,13 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
         if (row.length === 0) {
           msg.author.send(
             'Sorry, there are no runs scheduled at this time, please check back later.'
-          )
+          ).catch((error) => {
+            console.log(error) 
+            msg.reply({ embeds: [embedPlusOne] })
+              .then(msg =>{
+              setTimeout(() => msg.delete(), 120100)
+              })
+          })
         } else {
           let passcodeChannel = client.channels.cache.get(
             serverInfo.channels.passcodePG
@@ -73,11 +85,23 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
                 )}:R>.\nPasswords will ping in ${passcodeChannel} at 30 minutes left.
             \nContact <@${raidLeader}> aka ${raidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
               )
-              .catch((error) => console.log(error))
+              .catch((error) => {
+                console.log(error) 
+                msg.reply({ embeds: [embedPlusOne] })
+                  .then(msg =>{
+                  setTimeout(() => msg.delete(), 120100)
+                  })
+              })
           } else if (row[1] === undefined) {
             msg.author.send(
               "Sorry, there are no runs scheduled at this time that are accepting +1's, please check back later."
-            )
+            ).catch((error) => {
+              console.log(error) 
+              msg.reply({ embeds: [embedPlusOne] })
+                .then(msg =>{
+                setTimeout(() => msg.delete(), 120100)
+                })
+            })
           } else if (
             Math.round(row[0].Start) < Date.now() + 7200000 &&
             Math.round(row[1].Start) < Date.now() + 172800000
@@ -95,15 +119,27 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
                 )}:R>.\nPasswords will ping in ${passcodeChannel} at 30 minutes left.
             \nContact <@${nextraidLeader}> aka ${nextraidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
               )
-              .catch((error) => console.log(error))
+              .catch((error) => {
+                console.log(error) 
+                msg.reply({ embeds: [embedPlusOne] })
+                  .then(msg =>{
+                  setTimeout(() => msg.delete(), 120100)
+                  })
+              })
           } else {
             msg.author
               .send(`The next avaiable run for requesting +1's for is more than 48 hours away. Run this command again closer to your desired runtime. Click here to see the schedule: <#${serverInfo.channels.schedule}>.
-      \nPlease note that only Open runs will return using this command.`)
+              \nPlease note that only Open runs will return using this command.`)
+              .catch((error) => {
+                console.log(error) 
+                msg.reply({ embeds: [embedPlusOne] })
+                  .then(msg =>{
+                  setTimeout(() => msg.delete(), 120100)
+                  })
+              })
           }
         }
       })
-      .catch((error) => console.log(error))
   }
 }
 
