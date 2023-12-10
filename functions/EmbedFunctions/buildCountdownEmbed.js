@@ -1,10 +1,14 @@
 const { EmbedBuilder } = require('discord.js')
-const { getDate, getServerTime } = require('../GeneralTimeFunctions/index')
+const { getUnixTime } = require('../GeneralTimeFunctions/index')
 
-const buildCountdownEmbed = (serverInfo, cafe, row, targetDate) => {
+const buildCountdownEmbed = (serverInfo, cafe, row, currentDate) => {
   return new EmbedBuilder()
     .setColor(serverInfo.embedColor)
-    .setTitle('**Next Scheduled Run**')
+    .setDescription(
+        '\n**Your current Local Time is:**\n ' +
+        getUnixTime() +
+        '\n## **Next Scheduled Run:**\n'
+    )    
     .addFields(
       {
         name: '__**Raid Leader**__',
@@ -21,7 +25,7 @@ const buildCountdownEmbed = (serverInfo, cafe, row, targetDate) => {
         name: '__**Time till run:**__',
         value: `<t:${Math.round(
           row[0].Start / 1000
-        )}:R>. Password at 30 minutes left.`
+        )}:R>. Party-Finder Password will ping in <#957892299642273792> at 30 minutes left.`
       },
       { name: '__**Run Notes**__', value: row[0].Description },
       {

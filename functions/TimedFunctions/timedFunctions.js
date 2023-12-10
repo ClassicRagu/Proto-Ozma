@@ -53,12 +53,6 @@ const timedFunctions = (client, serverInfo, pool, currentDate, config) => {
     let passcodeChannel = client.channels.cache.get(
       serverInfo.channels.passcodePG
     )
-    let embedServerTime = buildServerTimeEmbed(currentDate, serverInfo)
-    channelSchedule.messages
-      .fetch(serverInfo.posts.serverTime)
-      .then((msg) => {
-        msg.edit({ embeds: [embedServerTime] })
-      })
     pool
       .query(
         'SELECT `Type`, `Start`, `RL`, `Description`, `ID`, `Plusone`, `Newbie`, `EmbedID` FROM `Runs` WHERE `Start` > ? AND `Cancelled` = 0 and `DRS` = 0 ORDER BY `Start` ASC LIMIT 8',
