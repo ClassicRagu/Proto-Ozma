@@ -35,8 +35,6 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
     let channelSchedule = client.channels.cache.get(
       serverInfo.channels.scheduleChat
     )
-    /*let drsRaidgoer = cafe.roles.cache.get(
-      serverInfo.roles.flex.drsRaider).id;*/
     if (
       msg.channel.id != channelRecruitingDRS &&
       msg.channel.id != channelSchedule
@@ -47,18 +45,6 @@ const schedule = (msg, serverInfo, args, currentDate, client, pool) => {
       )
       return
     }
-    /*if (msg.member.roles.cache != drsRaidLeader && msg.channel.id == channelRecruitingDRS) {
-      commandError(msg, `You do not have the appropriate role to schedule that.`);
-      return;
-    }
-    if (msg.member.roles.cache != raidLeader && msg.channel.id == channelSchedule) {
-      commandError(msg, `You do not have the appropriate role to schedule that.`);
-      return;
-    }
-    if (!msg.member.roles.cache.has(serverInfo.roles.special.raidDRSLeader) && msg.channel.id == channelRecruitingDRS) {
-      commandError(msg, `You do not have the appropriate role to schedule that.`);
-      return;
-    }*/
     if (args[0] === 'add' || args[0] === 'nopw') {
       let postFormat =
         'Format: _!schedule add <type> <dd-mmm-yy> <TMZ> <hh:mm> (optional: arguments) (optional: description)_\n' +

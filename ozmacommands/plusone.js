@@ -1,5 +1,5 @@
 const {
-  buildPlusOneEmbed
+  buildDMEmbeds
 } = require('../functions/EmbedFunctions/index')
 
 const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
@@ -117,7 +117,7 @@ const plusone = (msg, serverInfo, currentDate, client, pool, ozmablack) => {
                 )}:F>, <t:${Math.round(
                   row[1].Start / 1000
                 )}:R>.\nPasswords will ping in ${passcodeChannel} at 30 minutes left.
-            \nContact <@${nextraidLeader}> aka ${nextraidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
+                \nContact <@${nextraidLeader}> aka ${nextraidLeaderT}, if you haven't cleared BA and you're interested in getting a spot reserved.`
               )
               .catch((error) => {
                 console.log(error) 

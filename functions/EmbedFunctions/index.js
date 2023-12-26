@@ -7,5 +7,5 @@ module.exports = {
   ...require('./buildScheduleEmbed'),
   ...require('./buildExternalAnnouncementEmbeds'),
   ...require('./buildCoundownNoScheduleEmbed'),
-  ...require('./buildPlusOneEmbed')
+  ...require('./buildDMEmbeds')
 }
